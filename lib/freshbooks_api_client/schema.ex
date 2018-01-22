@@ -5,23 +5,30 @@ defmodule FreshbooksApiClient.Schema do
 
   ## Callbacks:
 
-  * resource_url(opts) -> Returns a sub-url associated with the Schema.
   * resource() -> Returns a string cooresponding to resource name in
                   Freshbook's API response.
   """
 
-  @callback resource_url(Keyword.t() :: map) :: String.t()
   @callback resource() :: String.t()
 
+  @doc ~S(Facebooks abstraction for an ecto embedded schema)
+  defmacro api_schema(do: fields) do
+    quote do
+      import Ecto.Schema
+      embedded_schema(do: unquote(fields))
+    end
+  end
+
+  @doc ~S(A Simple way of accessing all Schema's features)
   defmacro __using__(opts) do
     resource = Keyword.get(opts, :resource)
 
     quote do
       use Ecto.Schema
 
-      def resource_url(_, _) do
-        raise "resource_url/2 not implemented for #{__MODULE__}"
-      end
+      import unquote(__MODULE__)
+
+      @behaviour unquote(__MODULE__)
 
       def resource() do
         case unquote(resource) do
@@ -31,7 +38,7 @@ defmodule FreshbooksApiClient.Schema do
         end
       end
 
-      defoverridable [resource_url: 2, resource: 0]
+      defoverridable [resource: 0]
     end
   end
 end
