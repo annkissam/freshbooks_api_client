@@ -6,15 +6,15 @@ defmodule FreshbooksApiClient.Schema do
   ## Callbacks:
 
   * resource_url(opts) -> Returns a sub-url associated with the Schema.
-  * collection_name() -> Returns a string cooresponding to collection name in
-                         Freshbook's API response.
+  * resource() -> Returns a string cooresponding to resource name in
+                  Freshbook's API response.
   """
 
   @callback resource_url(Keyword.t() :: map) :: String.t()
-  @callback collection_name() :: String.t()
+  @callback resource() :: String.t()
 
   defmacro __using__(opts) do
-    collection_name = Keyword.get(opts, :collection_name)
+    resource = Keyword.get(opts, :resource)
 
     quote do
       use Ecto.Schema
@@ -23,15 +23,15 @@ defmodule FreshbooksApiClient.Schema do
         raise "resource_url/2 not implemented for #{__MODULE__}"
       end
 
-      def collection_name() do
-        case unquote(collection_name) do
+      def resource() do
+        case unquote(resource) do
           n when is_binary(n) -> n
-          nil -> raise "collection_name/0 not implement for #{__MODULE__}"
-          _ -> raise "collection_name given isn't a string for #{__MODULE__}"
+          nil -> raise "resource/0 not implement for #{__MODULE__}"
+          _ -> raise "resource given isn't a string for #{__MODULE__}"
         end
       end
 
-      defoverridable [resource_url: 2, collection_name: 0]
+      defoverridable [resource_url: 2, resource: 0]
     end
   end
 end
