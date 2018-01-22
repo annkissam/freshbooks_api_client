@@ -21,6 +21,7 @@ defmodule FreshbooksApiClient.Mixfile do
     [
       {:ecto, "~> 2.2"},
       {:httpoison, "~> 0.13"},
+      {:poison, "~> 3.1"},
     ]
   end
 end
