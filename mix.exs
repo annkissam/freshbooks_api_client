@@ -18,6 +18,9 @@ defmodule FreshbooksApiClient.Mixfile do
   end
 
   defp deps do
-    [{:ecto, "~> 2.2"}]
+    [
+      {:ecto, "~> 2.2"},
+      {:httpoison, "~> 0.13"},
+    ]
   end
 end

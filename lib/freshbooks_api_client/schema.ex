@@ -17,6 +17,8 @@ defmodule FreshbooksApiClient.Schema do
     collection_name = Keyword.get(opts, :collection_name)
 
     quote do
+      use Ecto.Schema
+
       def resource_url(_, _) do
         raise "resource_url/2 not implemented for #{__MODULE__}"
       end
