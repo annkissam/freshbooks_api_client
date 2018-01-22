@@ -20,8 +20,10 @@ defmodule FreshbooksApiClient.Mixfile do
   defp deps do
     [
       {:ecto, "~> 2.2"},
+      {:erlsom, github: "willemdj/erlsom"},
       {:httpoison, "~> 0.13"},
       {:poison, "~> 3.1"},
+      {:xmlrpc, "~> 0.1"},
     ]
   end
 end
