@@ -9,8 +9,4 @@ defmodule FreshbooksApiClient.Interface.Tasks do
   alias FreshbooksApiClient.Schema.Task
 
   use FreshbooksApiClient.Interface, schema: Task
-
-  def create(params) do
-
-  end
 end
