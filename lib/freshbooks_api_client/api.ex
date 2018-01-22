@@ -10,30 +10,22 @@ defmodule FreshbooksApiClient.API do
 
   @doc ~s(This function delegates to `get` function in the `caller` module)
   def get(schema, opts \\ %{}) do
-    args = [schema, FreshbooksApiClient.subdomain(),
-            FreshbooksApiClient.token(), opts]
+    {caller, opts} = Map.pop(opts, :caller, FreshbooksApiClient.caller())
+    args = [schema, FreshbooksApiClient.token(), opts]
 
-    case apply(FreshbooksApiClient.caller(), :get, args) do
-      {:ok, %HTTPoison.Response{body: body, status_code: 200}} -> resolve_response(schema, body)
+    case apply(caller, :get, args) do
+      {:ok, %HTTPoison.Response{body: body, status_code: 200}} ->
+        resolve_response(schema, Poison.decode!(body, keys: :atoms))
       {:ok, %HTTPoison.Response{status_code: 401}} -> {:error, :unauthorized}
       {:error, %HTTPoison.Error{reason: _error}} -> {:error, :connection_err}
       _ -> {:error, :unknown}
     end
   end
 
-  defp resolve_response(schema, body) do
-    body
-    |> Poison.decode!
-    |> Enum.map(&Enum.map(&1, fn({x, y}) -> {String.to_atom(x), y} end))
-    |> Enum.map(&struct(schema, &1))
+  defp resolve_response(schema, body) when is_list(body) do
+    Enum.map(body, &resolve_response(schema, &1))
   end
-  # TODO need to add this for single struct vs collection
   defp resolve_response(schema, body) do
-    body
-    |> Poison.decode!
-    |> Map.get(apply(schema, :collection_name, []))
-    |> Enum.map(&Map.to_list &1)
-    |> Enum.map(&Enum.map(&1, fn({x, y}) -> {String.to_atom(x), y} end))
-    |> Enum.map(&struct(schema, &1))
+    struct!(schema, body)
   end
 end
