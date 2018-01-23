@@ -22,7 +22,8 @@ defmodule FreshbooksApiClient.Mixfile do
       {:ecto, "~> 2.2"},
       {:httpoison, "~> 0.13"},
       {:poison, "~> 3.1"},
-      {:xml_builder, "~> 2.0.0"},
+      {:sweet_xml, "~> 0.6"},
+      {:xml_builder, "~> 2.0"},
     ]
   end
 end
