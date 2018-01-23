@@ -5,11 +5,12 @@ defmodule FreshbooksApiClient.Interface do
 
   ## Callbacks:
 
-  * create(params) -> Creates the resource on Freshbooks.
-  * update(params) -> Updates an existing resource on Freshbooks.
-  * get(params) -> Retrieves an existing resource from Freshbooks.
-  * delete(params) -> Deletes an existing resource from Freshbooks.
-  * list(params) -> Retrieves a list of existing resources from Freshbooks.
+  * create(params, caller) -> Creates the resource on Freshbooks.
+  * update(params, caller) -> Updates an existing resource on Freshbooks.
+  * get(params, caller) -> Retrieves an existing resource from Freshbooks.
+  * delete(params, caller) -> Deletes an existing resource from Freshbooks.
+  * list(params, caller) -> Retrieves a list of existing resources from Freshbooks.
+  * translate(caller, action, response) -> Translates a response to a Schema struct.
   """
 
   alias FreshbooksApiClient.Caller.{HttpXml, InMemory}
@@ -92,7 +93,11 @@ defmodule FreshbooksApiClient.Interface do
         end
       end
 
-      defoverridable Enum.map(unquote(allowed), &{&1, 2})
+      def translate(_, _, _) do
+        raise "translate/3 not implemented for #{__MODULE__}"
+      end
+
+      defoverridable [{:translate, 3} | Enum.map(unquote(allowed), &{&1, 2})]
     end
   end
 end
