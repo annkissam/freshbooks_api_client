@@ -12,7 +12,7 @@ defmodule FreshbooksApiClient do
   ## Example Configuration (dev.exs)(Optional):
 
       config :freshbooks_api_client, FreshbooksApiClient,
-        caller: FreshbooksApiClient.HTTPClient,
+        caller: FreshbooksApiClient.Caller.HttpXml,
         token: "YOUR_FRESHBOOKS_API_TOKEN",
         subdomain: "sample"
 
@@ -35,7 +35,7 @@ defmodule FreshbooksApiClient do
       FreshbooksApiClient.InMemory
   """
   def caller do
-    config(:caller, FreshbooksApiClient.HTTPClient)
+    config(:caller, FreshbooksApiClient.Caller.HttpXml)
   end
 
 
