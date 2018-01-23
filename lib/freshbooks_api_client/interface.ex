@@ -17,7 +17,7 @@ defmodule FreshbooksApiClient.Interface do
   @actions ~w(create update get delete list)a
 
   @typedoc ~S(Types that denote a successful response)
-  @type success :: HTTPoison.Response.t()
+  @type success :: Ecto.Schema.t()
 
   @typedoc ~S(Types that denote an unsuccessful response)
   @type failure :: HTTPoison.Error.t() | String.t()
@@ -50,7 +50,7 @@ defmodule FreshbooksApiClient.Interface do
         case Enum.member?(unquote(allowed), :create) do
           true ->
             method = apply(unquote(schema), :resource, []) <> ".create"
-            apply(caller, :run, [method: method, params: params])
+            apply(caller, :run, [method, params])
           _ -> raise "action `:create` not allowed for #{unquote(schema)}"
         end
       end
@@ -59,7 +59,7 @@ defmodule FreshbooksApiClient.Interface do
         case Enum.member?(unquote(allowed), :update) do
           true ->
             method = apply(unquote(schema), :resource, []) <> ".update"
-            apply(caller, :run, [method: method, params: params])
+            apply(caller, :run, [method, params])
           _ -> raise "action `:update` not allowed for #{unquote(schema)}"
         end
       end
@@ -68,7 +68,7 @@ defmodule FreshbooksApiClient.Interface do
         case Enum.member?(unquote(allowed), :get) do
           true ->
             method = apply(unquote(schema), :resource, []) <> ".get"
-            apply(caller, :run, [method: method, params: params])
+            apply(caller, :run, [method, params])
           _ -> raise "action `:get` not allowed for #{unquote(schema)}"
         end
       end
@@ -77,7 +77,7 @@ defmodule FreshbooksApiClient.Interface do
         case Enum.member?(unquote(allowed), :delete) do
           true ->
             method = apply(unquote(schema), :resource, []) <> ".delete"
-            apply(caller, :run, [method: method, params: params])
+            apply(caller, :run, [method, params])
           _ -> raise "action `:delete` not allowed for #{unquote(schema)}"
         end
       end
@@ -86,7 +86,7 @@ defmodule FreshbooksApiClient.Interface do
         case Enum.member?(unquote(allowed), :list) do
           true ->
             method = apply(unquote(schema), :resource, []) <> ".list"
-            apply(caller, :run, [method: method, params: params])
+            apply(caller, :run, [method, params])
           _ -> raise "action `:list` not allowed for #{unquote(schema)}"
         end
       end

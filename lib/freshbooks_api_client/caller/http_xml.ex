@@ -11,35 +11,47 @@ defmodule FreshbooksApiClient.Caller.HttpXml do
 
   alias FreshbooksApiClient.Xml
 
-  def run([method: method, params: params], opts \\ []) do
-    method
-    |> get_request_body(params)
-    |> make_request(opts)
+  def run(method, params, opts \\ []) do
+    response = method
+      |> get_request_body(params)
+      |> make_request(opts)
+
+    case response do
+      {:ok, %HTTPoison.Response{body: resp, status_code: 200}} ->
+        {:ok, parse(resp)}
+      {:ok, %HTTPoison.Response{body: resp, status_code: 401}} ->
+        {:error, :unauthorized}
+      {:ok, %HTTPoison.Error{reason: _}} -> {:error, :conn}
+    end
   end
 
-  def get_request_body(method, params) do
+  defp get_request_body(method, params) do
     Xml.to_xml(method, params)
   end
 
-  def make_request(body, opts) do
+  defp make_request(body, opts) do
     HTTPoison.post(request_url(), body, generate_headers())
   end
 
-  def generate_headers() do
+  defp generate_headers() do
     [auth_headers()]
   end
 
-  def content_headers() do
+  defp content_headers() do
     {"Accept", "application/xml"}
   end
 
-  def auth_headers() do
+  defp auth_headers() do
     encoded = Base.encode64("#{FreshbooksApiClient.token()}:X")
     {"Authorization", "Basic #{encoded}"}
   end
 
-  def request_url(), do: request_url(FreshbooksApiClient.subdomain())
-  def request_url(subdomain) do
+  defp request_url(), do: request_url(FreshbooksApiClient.subdomain())
+  defp request_url(subdomain) do
     String.replace(@base_url, ":subdomain", subdomain)
+  end
+
+  defp parse(resp) do
+
   end
 end

@@ -8,7 +8,7 @@ defmodule FreshbooksApiClient.Schema.Task do
   use FreshbooksApiClient.Schema, resource: "task"
 
   api_schema do
-    # field :id, :integer
+    field :task_id, :integer
     field :name, :string
     field :billable, :boolean
     field :rate, :float
