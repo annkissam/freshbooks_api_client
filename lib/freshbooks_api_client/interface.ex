@@ -38,6 +38,8 @@ defmodule FreshbooksApiClient.Interface do
     allowed = Keyword.get(opts, :allow, @actions)
 
     quote do
+      import SweetXml
+
       @behaviour unquote(__MODULE__)
 
       defp schema() do
@@ -93,11 +95,41 @@ defmodule FreshbooksApiClient.Interface do
         end
       end
 
+      def translate(_, _, {:error, :unauthorized}), do: raise "Unauthorized!"
+      def translate(_, _, {:error, :conn}), do: raise "HTTP Connection Error!"
+      def translate(FreshbooksApiClient.Caller.HttpXml, :get, {:ok, xml}) do
+        xml
+        |> xpath(
+          ~x"//response/#{apply(unquote(schema), :resource, [])}",
+          unquote(schema)
+          |> apply(:__schema__, [:fields])
+          |> Enum.map(&{&1, ~x"./#{&1}/text()"s}))
+      end
+      def translate(FreshbooksApiClient.Caller.HttpXml, :list, {:ok, xml}) do
+        xml
+        |> xpath(
+          ~x"//response/#{apply(unquote(schema), :resources, [])}/#{apply(unquote(schema), :resource, [])}"l,
+          unquote(schema)
+          |> apply(:__schema__, [:fields])
+          |> Enum.map(&{&1, ~x"./#{&1}/text()"s}))
+        |> Enum.map(&to_schema/1)
+      end
       def translate(_, _, _) do
         raise "translate/3 not implemented for #{__MODULE__}"
       end
 
-      defoverridable [{:translate, 3} | Enum.map(unquote(allowed), &{&1, 2})]
+      defp to_schema(params) do
+        castable_params = unquote(schema)
+          |> apply(:__schema__, [:fields])
+          |> Enum.reduce(params, &transform/2)
+
+        struct!(unquote(schema), castable_params)
+      end
+
+      defp transform(_field, params), do: params
+
+      defoverridable [{:translate, 3}, {:transform, 2}
+                      | Enum.map(unquote(allowed), &{&1, 2})]
     end
   end
 end

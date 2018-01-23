@@ -7,9 +7,12 @@ defmodule FreshbooksApiClient.Schema do
 
   * resource() -> Returns a string cooresponding to resource name in
                   Freshbook's API response.
+  * resources() -> Returns a string cooresponding to resource collection in
+                  Freshbook's API response.
   """
 
   @callback resource() :: String.t()
+  @callback resources() :: String.t()
 
   @doc ~S(Facebooks abstraction for an ecto embedded schema)
   defmacro api_schema(do: fields) do
@@ -23,6 +26,7 @@ defmodule FreshbooksApiClient.Schema do
   @doc ~S(A Simple way of accessing all Schema's features)
   defmacro __using__(opts) do
     resource = Keyword.get(opts, :resource)
+    resources = Keyword.get(opts, :resources)
 
     quote do
       use Ecto.Schema
@@ -39,7 +43,14 @@ defmodule FreshbooksApiClient.Schema do
         end
       end
 
-      defoverridable [resource: 0]
+      def resources() do
+        case unquote(resources) do
+          n when is_binary(n) -> n
+          nil -> resource <> "s"
+        end
+      end
+
+      defoverridable [resource: 0, resources: 0]
     end
   end
 end

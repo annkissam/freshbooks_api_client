@@ -5,7 +5,8 @@ defmodule FreshbooksApiClient.Schema.TimeEntry do
   It uses a FreshbooksApiClient.Schema
   """
 
-  use FreshbooksApiClient.Schema, resource: "time_entry"
+  use FreshbooksApiClient.Schema, resource: "time_entry",
+    resources: "time_entries"
 
   api_schema do
     field :time_entry_id, :integer
