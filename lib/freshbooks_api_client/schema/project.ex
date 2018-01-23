@@ -5,7 +5,7 @@ defmodule FreshbooksApiClient.Schema.Project do
   It uses a FreshbooksApiClient.Schema
   """
 
-  alias FreshbooksApiClient.Schema.{Task, Staff}
+  alias FreshbooksApiClient.Schema.{Client, Task, Staff}
 
   use FreshbooksApiClient.Schema, resource: "project"
 

@@ -5,6 +5,8 @@ defmodule FreshbooksApiClient.Schema.TimeEntry do
   It uses a FreshbooksApiClient.Schema
   """
 
+  alias FreshbooksApiClient.Schema.{Project, Staff, Task}
+
   use FreshbooksApiClient.Schema, resource: "time_entry",
     resources: "time_entries"
 
