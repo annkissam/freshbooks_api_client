@@ -1,18 +1,18 @@
-defmodule FreshbooksApiClient.Interface.TimeEntries do
+defmodule FreshbooksApiClient.Interface.Projects do
   @moduledoc """
   This module handles the interface operations to interact with Freshbooks
-  time entries resource.
+  projects resource.
 
   It uses a FreshbooksApiClient.Interface
   """
 
   import SweetXml
 
-  alias FreshbooksApiClient.Schema.TimeEntry
+  alias FreshbooksApiClient.Schema.Project
 
-  @ids ~w(time_entry_id staff_id project_id task_id)a
+  use FreshbooksApiClient.Interface, schema: Project, allow: ~w(get list)a
 
-  use FreshbooksApiClient.Interface, schema: TimeEntry
+  @ids ~w(project_id client_id)a
 
   defp transform(field, params) when field in @ids do
     Map.update!(params, field, fn curr ->
@@ -22,22 +22,19 @@ defmodule FreshbooksApiClient.Interface.TimeEntries do
       end
     end)
   end
-  defp transform(:hours, params) do
-    Map.update!(params, :hours, fn curr ->
+  defp transform(:hour_budget, params) do
+    Map.update!(params, :hour_budget, fn curr ->
       case curr do
         "" -> nil
         _ -> (curr |> Float.parse() |> elem(0))
       end
     end)
   end
-  defp transform(:billed, params) do
-    Map.update!(params, :billed, &(&1 == "1"))
-  end
-  defp transform(:date, params) do
-    Map.update!(params, :date, fn curr ->
+  defp transform(:rate, params) do
+    Map.update!(params, :rate, fn curr ->
       case curr do
         "" -> nil
-        _ -> Date.from_iso8601!(curr)
+        _ -> (curr |> Float.parse() |> elem(0))
       end
     end)
   end

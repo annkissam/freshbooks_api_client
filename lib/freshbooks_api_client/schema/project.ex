@@ -19,7 +19,8 @@ defmodule FreshbooksApiClient.Schema.Project do
 
     belongs_to :client, Client
 
-    embeds_many :tasks, Task
-    embeds_many :staff, Staff
+    # Figure out how to do embdes
+    # embeds_many :tasks, Task
+    # embeds_many :staff, Staff
   end
 end
