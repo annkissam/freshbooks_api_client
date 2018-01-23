@@ -2,6 +2,9 @@ defmodule FreshbooksApiClient.Caller do
   @moduledoc """
   This module defines the behavior a `caller` must implement.
 
+  This module defines ways to call to Freshbooks. Natively supported Callers
+  include HttpXml Caller which calls to Freshbooks Classic API.
+
   ## Callbacks:
 
   * run(keys, opts) -> Makes a request with the given keys and options.

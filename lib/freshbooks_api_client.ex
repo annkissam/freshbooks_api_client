@@ -2,7 +2,7 @@ defmodule FreshbooksApiClient do
   @moduledoc """
   A Wrapper around [Freshbooks API](https://www.freshbooks.com/developers)
 
-  This package is just a wrapper, so it will only let you see resources that
+  This package is an extendable wrapper, so it will only let you see resources that
   correspond to permissions associated with the API token
 
   This package can be configured with default `token` and `subdomain`.

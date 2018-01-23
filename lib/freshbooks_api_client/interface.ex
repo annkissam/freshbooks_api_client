@@ -3,6 +3,14 @@ defmodule FreshbooksApiClient.Interface do
   This module defines the behavior an `interface` must implement in order
   to be accessible through the native callers of this package.
 
+  This module is at the heart of FreshbooksApiClient and catalyzes its
+  extendability. This abstraction/behaviour provides a set of functions
+  which can be included in a newly introduced Freshbooks resource and quickly
+  integrated with the rest of the API client.
+
+  See `FreshbooksApiClient.Interace.Tasks` for a simple example.
+  See `FreshbooksApiClient.Interace.Staff` for a complex example.
+
   ## Callbacks:
 
   * create(params, caller) -> Creates the resource on Freshbooks.
@@ -11,6 +19,9 @@ defmodule FreshbooksApiClient.Interface do
   * delete(params, caller) -> Deletes an existing resource from Freshbooks.
   * list(params, caller) -> Retrieves a list of existing resources from Freshbooks.
   * translate(caller, action, response) -> Translates a response to a Schema struct.
+  * transform(field, params) -> Transforms a field in params from string to
+            another type.
+  * to_schema(params) -> Converts the params to the specified schema struct.
   """
 
   alias FreshbooksApiClient.Caller.{HttpXml, InMemory}
@@ -31,6 +42,9 @@ defmodule FreshbooksApiClient.Interface do
   @callback get(map, atom()) :: response()
   @callback delete(map, atom()) :: response()
   @callback list(map, atom()) :: response()
+  @callback translate(atom(), atom(), term()) :: Ecto.Schema.t()
+  @callback tranform(atom(), map()) :: map()
+  @callback to_schema(map()) :: Ecto.Schema.t()
 
   @doc ~S(A Simple way of accessing all of Interace's features)
   defmacro __using__(opts) do

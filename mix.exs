@@ -1,19 +1,52 @@
 defmodule FreshbooksApiClient.Mixfile do
   use Mix.Project
 
+  @version "0.1.0"
+  @url "https://github.com/aditya7iyengar/freshbooks_api_client"
+
   def project do
     [
       app: :freshbooks_api_client,
-      version: "0.1.0",
+      version: @version,
       elixir: "~> 1.5",
       start_permanent: Mix.env == :prod,
-      deps: deps()
+      build_embedded: Mix.env == :prod,
+      deps: deps(),
+
+      # Hex
+      description: description(),
+      package: package(),
+
+      # Docs
+      name: "Akd",
+      docs: docs(),
     ]
   end
 
   def application do
+    [extra_applications: [:logger]]
+  end
+
+  defp description() do
+    """
+    A extendable wrapper around Freshbooks API written in Elixir.
+    """
+  end
+
+  def package do
     [
-      extra_applications: [:logger]
+      files: ["lib", "mix.exs", "README.md"],
+      maintainers: ["Adi Iyengar"],
+      licenses: ["MIT"],
+      links: %{"Github" => @url},
+    ]
+  end
+
+  def docs do
+    [
+      main: "FreshbooksApiClient",
+      source_url: @url,
+      source_ref: "v#{@version}"
     ]
   end
 

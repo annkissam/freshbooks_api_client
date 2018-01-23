@@ -3,6 +3,13 @@ defmodule FreshbooksApiClient.Schema do
   This module defines the behavior a `schema` must implement in order
   to be accessible through the native callers of this package.
 
+  This module adds extendability to this package. By using this module
+  and defining certain callbacks, a new set of resource can be very easily
+  integrated with this API client.
+
+  See `FreshbooksApiClient.Schema.Task` for an example of a simple `Schema`.
+  See `FreshbooksApiClient.Schema.Project` for an example of a complex `Schema`.
+
   ## Callbacks:
 
   * resource() -> Returns a string cooresponding to resource name in
