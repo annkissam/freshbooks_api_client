@@ -10,7 +10,7 @@ defmodule FreshbooksApiClient.Interface.Staff do
 
   alias FreshbooksApiClient.Schema.Staff
 
-  use FreshbooksApiClient.Interface, schema: Staff
+  use FreshbooksApiClient.Interface, schema: Staff, allow: ~w(get list)a
 
   def translate(_, _, {:error, :unauthorized}), do: raise "Unauthorized!"
   def translate(_, _, {:error, :conn}), do: raise "HTTP Connection Error!"
