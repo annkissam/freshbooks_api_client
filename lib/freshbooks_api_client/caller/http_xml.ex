@@ -21,25 +21,25 @@ defmodule FreshbooksApiClient.Caller.HttpXml do
     Xml.to_xml(method, params)
   end
 
-  defp make_request(body, opts) do
-    HTTPoison.post(request_url(opts[:subdomain]), body)
+  def make_request(body, opts) do
+    HTTPoison.post(request_url(), body, generate_headers())
   end
 
-  defp generate_headers() do
-    [content_headers(), auth_headers()]
+  def generate_headers() do
+    [auth_headers()]
   end
 
-  defp content_headers() do
+  def content_headers() do
     {"Accept", "application/xml"}
   end
 
-  defp auth_headers() do
-    encoded = Base.encode64("#{FreshbooksApiClient.token()}:x")
+  def auth_headers() do
+    encoded = Base.encode64("#{FreshbooksApiClient.token()}:X")
     {"Authorization", "Basic #{encoded}"}
   end
 
-  defp request_url(nil), do: request_url(FreshbooksApiClient.subdomain())
-  defp request_url(subdomain) do
-    String.replace(@base_url, :subdomain, subdomain)
+  def request_url(), do: request_url(FreshbooksApiClient.subdomain())
+  def request_url(subdomain) do
+    String.replace(@base_url, ":subdomain", subdomain)
   end
 end
