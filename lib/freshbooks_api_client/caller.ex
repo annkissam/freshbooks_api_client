@@ -4,11 +4,11 @@ defmodule FreshbooksApiClient.Caller do
 
   ## Callbacks:
 
-  * run(opts) -> Makes a request with the given options.
+  * run(keys, opts) -> Makes a request with the given keys and options.
 
   """
 
-  @callback run(keyword) :: String.t()
+  @callback run(keyword, keyword) :: String.t()
 
   @doc ~S(A Simple way of accessing all Caller's features)
   defmacro __using__(_opts) do
@@ -17,11 +17,11 @@ defmodule FreshbooksApiClient.Caller do
 
       @behaviour unquote(__MODULE__)
 
-      def run(_) do
-        raise "run/1 not implement for #{__MODULE__}"
+      def run(_, _) do
+        raise "run/2 not implement for #{__MODULE__}"
       end
 
-      defoverridable [run: 1]
+      defoverridable [run: 2]
     end
   end
 end
