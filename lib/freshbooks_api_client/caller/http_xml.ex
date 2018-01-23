@@ -18,7 +18,7 @@ defmodule FreshbooksApiClient.Caller.HttpXml do
 
     case response do
       {:ok, %HTTPoison.Response{body: resp, status_code: 200}} ->
-        {:ok, parse(resp)}
+        {:ok, resp}
       {:ok, %HTTPoison.Response{body: resp, status_code: 401}} ->
         {:error, :unauthorized}
       {:ok, %HTTPoison.Error{reason: _}} -> {:error, :conn}
@@ -49,9 +49,5 @@ defmodule FreshbooksApiClient.Caller.HttpXml do
   defp request_url(), do: request_url(FreshbooksApiClient.subdomain())
   defp request_url(subdomain) do
     String.replace(@base_url, ":subdomain", subdomain)
-  end
-
-  defp parse(resp) do
-
   end
 end

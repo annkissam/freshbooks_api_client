@@ -25,11 +25,11 @@ defmodule FreshbooksApiClient.Interface do
   @typedoc ~S(Various response types that can happen upon an interface call)
   @type response :: {:ok, success()} | {:error, failure()}
 
-  @callback create(atom(), map) :: response()
-  @callback update(atom(), map) :: response()
-  @callback get(atom(), map) :: response()
-  @callback delete(atom(), map) :: response()
-  @callback list(atom(), map) :: response()
+  @callback create(map, atom()) :: response()
+  @callback update(map, atom()) :: response()
+  @callback get(map, atom()) :: response()
+  @callback delete(map, atom()) :: response()
+  @callback list(map, atom()) :: response()
 
   @doc ~S(A Simple way of accessing all of Interace's features)
   defmacro __using__(opts) do
@@ -46,47 +46,48 @@ defmodule FreshbooksApiClient.Interface do
         end
       end
 
-      def create(caller, params) do
+      def create(params, caller \\ FreshbooksApiClient.Caller.HttpXml) do
         case Enum.member?(unquote(allowed), :create) do
           true ->
             method = apply(unquote(schema), :resource, []) <> ".create"
             apply(caller, :run, [method, params])
+            translate(caller, :create, apply(caller, :run, [method, params]))
           _ -> raise "action `:create` not allowed for #{unquote(schema)}"
         end
       end
 
-      def update(caller, params) do
+      def update(params, caller \\ FreshbooksApiClient.Caller.HttpXml) do
         case Enum.member?(unquote(allowed), :update) do
           true ->
             method = apply(unquote(schema), :resource, []) <> ".update"
-            apply(caller, :run, [method, params])
+            translate(caller, :update, apply(caller, :run, [method, params]))
           _ -> raise "action `:update` not allowed for #{unquote(schema)}"
         end
       end
 
-      def get(caller, params) do
+      def get(params, caller \\ FreshbooksApiClient.Caller.HttpXml) do
         case Enum.member?(unquote(allowed), :get) do
           true ->
             method = apply(unquote(schema), :resource, []) <> ".get"
-            apply(caller, :run, [method, params])
-          _ -> raise "action `:get` not allowed for #{unquote(schema)}"
+            translate(caller, :get, apply(caller, :run, [method, params]))
+            _ -> raise "action `:get` not allowed for #{unquote(schema)}"
         end
       end
 
-      def delete(caller, params) do
+      def delete(params, caller \\ FreshbooksApiClient.Caller.HttpXml) do
         case Enum.member?(unquote(allowed), :delete) do
           true ->
             method = apply(unquote(schema), :resource, []) <> ".delete"
-            apply(caller, :run, [method, params])
+            translate(caller, :delete, apply(caller, :run, [method, params]))
           _ -> raise "action `:delete` not allowed for #{unquote(schema)}"
         end
       end
 
-      def list(caller, params) do
+      def list(params, caller \\ FreshbooksApiClient.Caller.HttpXml) do
         case Enum.member?(unquote(allowed), :list) do
           true ->
             method = apply(unquote(schema), :resource, []) <> ".list"
-            apply(caller, :run, [method, params])
+            translate(caller, :list, apply(caller, :run, [method, params]))
           _ -> raise "action `:list` not allowed for #{unquote(schema)}"
         end
       end

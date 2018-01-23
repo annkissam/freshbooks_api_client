@@ -15,6 +15,7 @@ defmodule FreshbooksApiClient.Schema do
   defmacro api_schema(do: fields) do
     quote do
       import Ecto.Schema
+      @primary_key false
       embedded_schema(do: unquote(fields))
     end
   end
