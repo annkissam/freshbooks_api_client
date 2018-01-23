@@ -86,7 +86,7 @@ defmodule FreshbooksApiClient.Interface do
         end
       end
 
-      def list(params, caller \\ FreshbooksApiClient.Caller.HttpXml) do
+      def list(params \\ [], caller \\ FreshbooksApiClient.Caller.HttpXml) do
         case Enum.member?(unquote(allowed), :list) do
           true ->
             method = apply(unquote(schema), :resource, []) <> ".list"
