@@ -16,9 +16,9 @@ defmodule FreshbooksApiClient.Schema.Staff do
     field :business_phone, :string
     field :mobile_phone, :string
     field :rate, :float
-    field :last_login, :utc_datetime
+    field :last_login, :naive_datetime
     field :number_of_logins, :integer
-    field :signup_date, :utc_datetime
+    field :signup_date, :naive_datetime
     field :street1, :string
     field :street2, :string
     field :city, :string

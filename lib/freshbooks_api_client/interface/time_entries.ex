@@ -18,13 +18,23 @@ defmodule FreshbooksApiClient.Interface.TimeEntries do
     Map.update!(params, field, &String.to_integer/1)
   end
   defp transform(:hours, params) do
-    Map.update!(params, :hours, &(&1 |> Float.parse() |> elem(0)))
+    Map.update!(params, :hours, fn curr ->
+      case curr do
+        "" -> nil
+        _ -> (curr |> Float.parse() |> elem(0))
+      end
+    end)
   end
   defp transform(:billed, params) do
     Map.update!(params, :billed, &(&1 == "1"))
   end
   defp transform(:date, params) do
-    Map.update!(params, :date, &Date.from_iso8601!/1)
+    Map.update!(params, :date, fn curr ->
+      case curr do
+        "" -> nil
+        _ -> Date.from_iso8601!(curr)
+      end
+    end)
   end
   defp transform(_field, params), do: params
 end

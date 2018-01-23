@@ -16,7 +16,12 @@ defmodule FreshbooksApiClient.Interface.Tasks do
     Map.update!(params, :task_id, &String.to_integer/1)
   end
   defp transform(:rate, params) do
-    Map.update!(params, :rate, &String.to_float/1)
+    Map.update!(params, :rate, fn curr ->
+      case curr do
+        "" -> nil
+        _ -> (curr |> Float.parse() |> elem(0))
+      end
+    end)
   end
   defp transform(:billable, params) do
     Map.update!(params, :billable, &(&1 == "1"))
