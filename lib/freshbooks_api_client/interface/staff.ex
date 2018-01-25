@@ -21,6 +21,7 @@ defmodule FreshbooksApiClient.Interface.Staff do
       Staff
       |> apply(:__schema__, [:fields])
       |> Enum.map(&{&1, ~x"./#{&1}/text()"s}))
+    |> to_schema()
   end
   # This is really weird for Staff Resource.
   # This is super inconsistent and hopefully Freshbooks will change it in
