@@ -30,9 +30,9 @@ defmodule FreshbooksApiClient do
   in the `config.exs` file
 
   ## Examples
-  when no `caller` config is set, if returns `FreshbooksApiClient.Caller`
+  when no `caller` config is set, if returns `FreshbooksApiClient.Caller.HttpXml`
       iex> FreshbooksApiClient.caller
-      FreshbooksApiClient.InMemory
+      FreshbooksApiClient.Caller.HttpXml
   """
   def caller do
     config(:caller, FreshbooksApiClient.Caller.HttpXml)
@@ -73,7 +73,7 @@ defmodule FreshbooksApiClient do
   ## Examples
   when no config is set, if returns []
       iex> FreshbooksApiClient.config
-      [caller: FreshbooksApiClient.InMemory, token: "thuum", subdomain: "skyrim"]
+      [token: "thuum", subdomain: "skyrim"]
   """
   def config do
     Application.get_env(:freshbooks_api_client, FreshbooksApiClient, [])
