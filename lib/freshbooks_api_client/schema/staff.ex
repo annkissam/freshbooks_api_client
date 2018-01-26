@@ -5,7 +5,7 @@ defmodule FreshbooksApiClient.Schema.Staff do
   It uses a FreshbooksApiClient.Schema
   """
 
-  use FreshbooksApiClient.Schema, resource: "staff"
+  use FreshbooksApiClient.Schema, resource: "staff", resources: "staff_members"
 
   api_schema do
     field :staff_id, :integer
@@ -15,7 +15,7 @@ defmodule FreshbooksApiClient.Schema.Staff do
     field :email, :string
     field :business_phone, :string
     field :mobile_phone, :string
-    field :rate, :float
+    field :rate, :decimal
     field :last_login, :naive_datetime
     field :number_of_logins, :integer
     field :signup_date, :naive_datetime

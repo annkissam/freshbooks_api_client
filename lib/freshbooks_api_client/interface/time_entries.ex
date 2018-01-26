@@ -10,36 +10,63 @@ defmodule FreshbooksApiClient.Interface.TimeEntries do
 
   alias FreshbooksApiClient.Schema.TimeEntry
 
-  @ids ~w(time_entry_id staff_id project_id task_id)a
-
   use FreshbooksApiClient.Interface, schema: TimeEntry
 
-  defp transform(field, params) when field in @ids do
+  def xml_parent_spec(:list) do
+    {
+     ~x"//response/time_entries/time_entry"l,
+      xml_spec()
+    }
+  end
+
+  def xml_parent_spec(:get) do
+    {
+      ~x"//response/time_entry",
+      xml_spec()
+    }
+
+  end
+
+  def xml_spec do
+    [
+      time_entry_id: ~x"./time_entry_id/text()"i,
+      hours: ~x"./hours/text()"s,
+      date: ~x"./date/text()"s,
+      notes: ~x"./notes/text()"s,
+      billed: ~x"./billed/text()"s,
+      staff_id: ~x"./staff_id/text()"i,
+      project_id: ~x"./project_id/text()"i,
+      task_id: ~x"./task_id/text()"i,
+    ]
+  end
+
+  def transform(field, params) when field in [:hours] do
     Map.update!(params, field, fn curr ->
       case curr do
         "" -> nil
-        _ -> String.to_integer(curr)
+        _ ->
+          curr
+          |> Decimal.new
       end
     end)
   end
-  defp transform(:hours, params) do
-    Map.update!(params, :hours, fn curr ->
+
+  def transform(field, params) when field in [:date] do
+    Map.update!(params, field, fn curr ->
       case curr do
         "" -> nil
-        _ -> (curr |> Float.parse() |> elem(0))
+        _ ->
+          # Some date's also have a time component: 2018-01-01 00:00:00
+          String.split(curr, " ")
+          |> List.first
+          |> Date.from_iso8601!
       end
     end)
   end
-  defp transform(:billed, params) do
-    Map.update!(params, :billed, &(&1 == "1"))
+
+  def transform(field, params) when field in [:billed] do
+    Map.update!(params, field, &(&1 == "1"))
   end
-  defp transform(:date, params) do
-    Map.update!(params, :date, fn curr ->
-      case curr do
-        "" -> nil
-        _ -> Date.from_iso8601!(curr)
-      end
-    end)
-  end
-  defp transform(_field, params), do: params
+
+  def transform(_field, params), do: params
 end

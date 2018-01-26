@@ -55,8 +55,10 @@ defmodule FreshbooksApiClient.Mixfile do
     [
       {:ecto, "~> 2.2"},
       {:ex_doc, "~> 0.14", only: :dev, runtime: false},
+      {:exvcr, "~> 0.8", only: :test},
       {:httpoison, "~> 0.13"},
       {:poison, "~> 3.1"},
+      {:retry, "~> 0.8"},
       {:sweet_xml, "~> 0.6"},
       {:xml_builder, "~> 2.0"},
     ]

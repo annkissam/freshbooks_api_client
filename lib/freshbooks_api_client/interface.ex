@@ -26,6 +26,8 @@ defmodule FreshbooksApiClient.Interface do
 
   alias FreshbooksApiClient.Caller.{HttpXml, InMemory}
 
+  import SweetXml
+
   @actions ~w(create update get delete list)a
 
   @typedoc ~S(Types that denote a successful response)
@@ -50,6 +52,7 @@ defmodule FreshbooksApiClient.Interface do
   defmacro __using__(opts) do
     schema = Keyword.get(opts, :schema)
     allowed = Keyword.get(opts, :allow, @actions)
+    interface = __MODULE__
 
     quote do
       import SweetXml
@@ -112,40 +115,128 @@ defmodule FreshbooksApiClient.Interface do
       def translate(_, _, {:error, :unauthorized}), do: raise "Unauthorized!"
       def translate(_, _, {:error, :conn}), do: raise "HTTP Connection Error!"
       def translate(FreshbooksApiClient.Caller.HttpXml, :get, {:ok, xml}) do
+        {parent, spec} = apply(__MODULE__, :xml_parent_spec, [:get])
+
         xml
-        |> xpath(
-          ~x"//response/#{apply(unquote(schema), :resource, [])}",
-          unquote(schema)
-          |> apply(:__schema__, [:fields])
-          |> Enum.map(&{&1, ~x"./#{&1}/text()"s}))
-          |> to_schema()
+        |> xpath(parent, spec)
+        |> to_schema()
+
+        # xml
+        # |> xpath(
+        #   ~x"//response/#{apply(unquote(schema), :resource, [])}",
+        #   unquote(schema)
+        #   |> apply(:__schema__, [:fields])
+        #   |> Enum.map(&{&1, ~x"./#{&1}/text()"s}))
+        # |> to_schema()
       end
+
       def translate(FreshbooksApiClient.Caller.HttpXml, :list, {:ok, xml}) do
-        xml
-        |> xpath(
-          ~x"//response/#{apply(unquote(schema), :resources, [])}/#{apply(unquote(schema), :resource, [])}"l,
-          unquote(schema)
-          |> apply(:__schema__, [:fields])
-          |> Enum.map(&{&1, ~x"./#{&1}/text()"s}))
-        |> Enum.map(&to_schema/1)
+        FreshbooksApiClient.Interface.translate(__MODULE__, unquote(schema), FreshbooksApiClient.Caller.HttpXml, :list, {:ok, xml})
       end
+
       def translate(_, _, _) do
         raise "translate/3 not implemented for #{__MODULE__}"
       end
 
       defp to_schema(params) do
-        castable_params = unquote(schema)
-          |> apply(:__schema__, [:fields])
-          |> Enum.reduce(params, &transform/2)
-
-        struct!(unquote(schema), castable_params)
+        FreshbooksApiClient.Interface.to_schema(__MODULE__, unquote(schema), params)
       end
 
-      defp transform(_field, params), do: params
+      def transform(_field, params), do: params
 
       defoverridable [{:translate, 3}, {:transform, 2}
                       | Enum.map(unquote(allowed), &{&1, 2})]
     end
   end
-end
 
+  def translate(interface, schema, FreshbooksApiClient.Caller.HttpXml, :list, {:ok, xml}) do
+    resources_key = apply(schema, :resources, [])
+
+    per_page = xml |> xpath(~x"//response/#{resources_key}/@per_page"s) |> String.to_integer()
+    page = xml |> xpath(~x"//response/#{resources_key}/@page"s) |> String.to_integer()
+    pages = xml |> xpath(~x"//response/#{resources_key}/@pages"s) |> String.to_integer()
+    total = xml |> xpath(~x"//response/#{resources_key}/@total"s) |> String.to_integer()
+
+    {parent, spec} = apply(interface, :xml_parent_spec, [:list])
+
+    resources = xml
+      |> xpath(parent, spec)
+      |> Enum.map(&(to_schema(interface, schema, &1)))
+
+    # schema.__schema__(:embeds)
+    # [:lines]
+
+    # schema.__schema__(:embed, :lines)
+    # %Ecto.Embedded{cardinality: :many, field: :lines, on_cast: nil,
+    #  on_replace: :raise, owner: FreshbooksApiClient.Schema.Invoice,
+    #  related: FreshbooksApiClient.Schema.InvoiceLine, unique: true}
+
+    %{
+      per_page: per_page,
+      page: page,
+      pages: pages,
+      total: total,
+      resources: resources,
+    }
+  end
+
+  def to_schema(interface, schema, params) do
+    castable_params = schema
+      |> apply(:__schema__, [:fields])
+      |> Enum.reduce(params, &(apply(interface, :transform, [&1, &2])))
+
+    struct!(schema, castable_params)
+  end
+
+  def call(interface, method, params \\ []) do
+    use Retry
+
+    result = retry with: [5_000, 30_000, 60_000], rescue_only: [FreshbooksApiClient.RateLimitError] do
+      call_without_retry(interface, method, params)
+    end
+  end
+
+  # TODO: I'm not sure what a rate limit error looks like, but when we get one we need to raise this exception
+  def call_without_retry(interface, method, params) do
+    apply(interface, method, [params])
+  end
+
+  def all(interface, params \\ []) do
+    use Retry
+
+    result = retry with: [5_000, 30_000, 60_000], rescue_only: [FreshbooksApiClient.PaginationError] do
+      all_without_retry(interface, params)
+    end
+  end
+
+  # Failure Scenarios (per_page: 3)
+  # 1,2,3 + 4,5,6 total == 6
+
+  # delete 3 after page 1
+  # 1,2,3, + 5,6 total == 5 (total count changed)
+
+  # add 7 after page 1
+  # 1,2,3 + 4,5,6 + 7 total == 7 (total count & total_pages changed - we could just grab another page)
+
+  # delete 3, add 7 after page 1
+  # 1,2,3 + 5,6,7 total == 6 (the results are inaccurate - Check that #4 is actually deleted w/ a get call to the API)
+  def all_without_retry(interface, params) do
+    results = call(interface, :list, [Keyword.merge(params, [per_page: 100])])
+
+    pages = results[:pages]
+    total = results[:total]
+    resources = results[:resources]
+
+    if pages == 1 do
+      resources
+    else
+      Enum.reduce(Range.new(2, pages), resources, fn(page, acc) ->
+        results = call(interface, :list, [Keyword.merge(params, [per_page: 100, page: page])])
+
+        if results[:total] != total, do: raise FreshbooksApiClient.PaginationError
+
+        acc ++ results[:resources]
+      end)
+    end
+  end
+end

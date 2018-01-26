@@ -12,7 +12,5 @@ defmodule FreshbooksApiClient.Schema.Client do
     field :first_name, :string
     field :last_name, :string
     field :organization, :string
-    # TODO: Add rest of the fields
-    # For now, I'm adding only a few fields
   end
 end

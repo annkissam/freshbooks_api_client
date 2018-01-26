@@ -11,7 +11,7 @@ defmodule FreshbooksApiClient.Schema.Task do
     field :task_id, :integer
     field :name, :string
     field :billable, :boolean
-    field :rate, :float
+    field :rate, :decimal
     field :description, :string
   end
 end

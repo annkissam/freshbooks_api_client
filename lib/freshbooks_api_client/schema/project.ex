@@ -5,19 +5,17 @@ defmodule FreshbooksApiClient.Schema.Project do
   It uses a FreshbooksApiClient.Schema
   """
 
-  alias FreshbooksApiClient.Schema.{Client, Task, Staff}
-
   use FreshbooksApiClient.Schema, resource: "project"
 
   api_schema do
     field :project_id, :integer
     field :name, :string
     field :description, :string
-    field :rate, :float
+    field :rate, :decimal
     field :bill_method, :string
-    field :hour_budget, :float
+    field :hour_budget, :decimal
 
-    belongs_to :client, Client
+    belongs_to :client, FreshbooksApiClient.Schema.Client
 
     # Figure out how to do embdes
     # embeds_many :tasks, Task

@@ -96,3 +96,12 @@ defmodule FreshbooksApiClient do
 
   def resolve_config(value, _default), do: value
 end
+
+defmodule FreshbooksApiClient.RateLimitError do
+  defexception message: "the API responded with a 'rate-limited' error"
+end
+
+defmodule FreshbooksApiClient.PaginationError do
+  defexception message: "the total_count changed while retrieving results"
+end
+
