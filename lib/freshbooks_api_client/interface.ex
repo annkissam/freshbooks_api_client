@@ -120,14 +120,6 @@ defmodule FreshbooksApiClient.Interface do
         xml
         |> xpath(parent, spec)
         |> to_schema()
-
-        # xml
-        # |> xpath(
-        #   ~x"//response/#{apply(unquote(schema), :resource, [])}",
-        #   unquote(schema)
-        #   |> apply(:__schema__, [:fields])
-        #   |> Enum.map(&{&1, ~x"./#{&1}/text()"s}))
-        # |> to_schema()
       end
 
       def translate(FreshbooksApiClient.Caller.HttpXml, :list, {:ok, xml}) do

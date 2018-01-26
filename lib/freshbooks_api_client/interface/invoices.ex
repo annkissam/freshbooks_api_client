@@ -81,17 +81,32 @@ defmodule FreshbooksApiClient.Interface.Invoices do
     end)
   end
 
-  # TODO: Map line...
-  # def transform(:lines, params) do
-  #   Map.update!(params, :lines, fn curr ->
-  #     case curr do
-  #       "" -> nil
-  #       _ ->
-  #         curr
-  #         |> Decimal.new
-  #     end
-  #   end)
-  # end
+  def transform(:lines, params) do
+    Map.update!(params, :lines, fn curr ->
+      Enum.map(curr, &(to_schema(:line_item, &1)))
+    end)
+  end
+
+  def to_schema(:line_item, params) do
+    castable_params = FreshbooksApiClient.Schema.InvoiceLine
+      |> apply(:__schema__, [:fields])
+      |> Enum.reduce(params, &(transform(:invoice_line, &1, &2)))
+
+    struct!(FreshbooksApiClient.Schema.InvoiceLine, castable_params)
+  end
 
   def transform(_field, params), do: params
+
+  def transform(:invoice_line, field, params) when field in [:unit_cost, :quantity, :amount] do
+    Map.update!(params, field, fn curr ->
+      case curr do
+        "" -> nil
+        _ ->
+          curr
+          |> Decimal.new
+      end
+    end)
+  end
+
+  def transform(:invoice_line, _field, params), do: params
 end
