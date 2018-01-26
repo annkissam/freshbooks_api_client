@@ -12,6 +12,7 @@ defmodule FreshbooksApiClient.Mixfile do
       start_permanent: Mix.env == :prod,
       build_embedded: Mix.env == :prod,
       deps: deps(),
+      aliases: aliases(),
 
       # Hex
       description: description(),
@@ -59,5 +60,14 @@ defmodule FreshbooksApiClient.Mixfile do
       {:sweet_xml, "~> 0.6"},
       {:xml_builder, "~> 2.0"},
     ]
+  end
+
+  defp aliases do
+    ["publish": ["hex.publish", &git_tag/1]]
+  end
+
+  defp git_tag(_args) do
+    System.cmd "git", ["tag", "v" <> Mix.Project.config[:version]]
+    System.cmd "git", ["push", "--tags"]
   end
 end
