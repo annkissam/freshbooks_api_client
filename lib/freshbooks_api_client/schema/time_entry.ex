@@ -14,8 +14,8 @@ defmodule FreshbooksApiClient.Schema.TimeEntry do
     field :notes, :string
     field :billed, :boolean
 
-    belongs_to :staff, FreshbooksApiClient.Schema.Staff
-    belongs_to :project, FreshbooksApiClient.Schema.Project
-    belongs_to :task, FreshbooksApiClient.Schema.Task
+    belongs_to :staff, FreshbooksApiClient.Schema.Staff, references: :staff_id
+    belongs_to :project, FreshbooksApiClient.Schema.Project, references: :project_id
+    belongs_to :task, FreshbooksApiClient.Schema.Task, references: :task_id
   end
 end

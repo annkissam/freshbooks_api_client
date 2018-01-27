@@ -15,7 +15,7 @@ defmodule FreshbooksApiClient.Schema.Invoice do
     field :status, :string
     field :folder, :string
 
-    belongs_to :client, FreshbooksApiClient.Schema.Client
+    belongs_to :client, FreshbooksApiClient.Schema.Client, references: :client_id
 
     embeds_many :lines, FreshbooksApiClient.Schema.InvoiceLine
   end

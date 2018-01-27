@@ -8,10 +8,10 @@ defmodule FreshbooksApiClient.Interface.TimeEntries do
 
   import SweetXml
 
-  alias FreshbooksApiClient.Schema.TimeEntry
-
-  use FreshbooksApiClient.Interface, schema: TimeEntry, resource: "time_entry",
-    resources: "time_entries"
+  use FreshbooksApiClient.Interface,
+    schema: FreshbooksApiClient.Schema.TimeEntry,
+    resources: "time_entries",
+    resource: "time_entry"
 
   def xml_parent_spec(:list) do
     {
@@ -25,7 +25,6 @@ defmodule FreshbooksApiClient.Interface.TimeEntries do
       ~x"//response/time_entry",
       xml_spec()
     }
-
   end
 
   def xml_spec do

@@ -8,9 +8,11 @@ defmodule FreshbooksApiClient.Interface.Tasks do
 
   import SweetXml
 
-  alias FreshbooksApiClient.Schema.Task
-
-  use FreshbooksApiClient.Interface, schema: Task, allow: ~w(get list)a, resource: "task"
+  use FreshbooksApiClient.Interface,
+    schema: FreshbooksApiClient.Schema.Task,
+    resources: "tasks",
+    resource: "task",
+    allow: ~w(get list)a
 
   def xml_parent_spec(:list) do
     {

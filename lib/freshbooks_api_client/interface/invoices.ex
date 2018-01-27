@@ -8,9 +8,11 @@ defmodule FreshbooksApiClient.Interface.Invoices do
 
   import SweetXml
 
-  alias FreshbooksApiClient.Schema.Invoice
-
-  use FreshbooksApiClient.Interface, schema: Invoice, allow: ~w(get list)a, resource: "invoice"
+  use FreshbooksApiClient.Interface,
+    schema: FreshbooksApiClient.Schema.Invoice,
+    resources: "invoices",
+    resource: "invoice",
+    allow: ~w(get list)a
 
   def xml_parent_spec(:list) do
     {

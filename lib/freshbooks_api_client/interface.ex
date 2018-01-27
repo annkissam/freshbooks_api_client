@@ -22,7 +22,7 @@ defmodule FreshbooksApiClient.Interface do
   * to_schema(params) -> Converts the params to the specified schema struct.
   """
 
-  alias FreshbooksApiClient.Caller.{HttpXml, InMemory}
+  # alias FreshbooksApiClient.Caller.{HttpXml, InMemory}
 
   import SweetXml
 
@@ -48,11 +48,12 @@ defmodule FreshbooksApiClient.Interface do
   @callback resource() :: String.t()
   @callback resources() :: String.t()
 
+  @callback xml_parent_spec(atom()) :: {any, list}
+
   @doc ~S(A Simple way of accessing all of Interace's features)
   defmacro __using__(opts) do
     schema = Keyword.get(opts, :schema)
     allowed = Keyword.get(opts, :allow, @actions)
-    interface = __MODULE__
     resource = Keyword.get(opts, :resource)
     resources = Keyword.get(opts, :resources)
 
@@ -147,7 +148,7 @@ defmodule FreshbooksApiClient.Interface do
         raise "translate/3 not implemented for #{__MODULE__}"
       end
 
-      defp to_schema(params) do
+      def to_schema(params) do
         FreshbooksApiClient.Interface.to_schema(unquote(schema), params)
       end
 
@@ -209,7 +210,7 @@ defmodule FreshbooksApiClient.Interface do
   def call(interface, method, params \\ []) do
     use Retry
 
-    result = retry with: [5_000, 30_000, 60_000], rescue_only: [FreshbooksApiClient.RateLimitError] do
+    retry with: [5_000, 30_000, 60_000], rescue_only: [FreshbooksApiClient.RateLimitError] do
       call_without_retry(interface, method, params)
     end
   end
@@ -222,7 +223,7 @@ defmodule FreshbooksApiClient.Interface do
   def all(interface, params \\ []) do
     use Retry
 
-    result = retry with: [5_000, 30_000, 60_000], rescue_only: [FreshbooksApiClient.PaginationError] do
+    retry with: [5_000, 30_000, 60_000], rescue_only: [FreshbooksApiClient.PaginationError] do
       all_without_retry(interface, params)
     end
   end

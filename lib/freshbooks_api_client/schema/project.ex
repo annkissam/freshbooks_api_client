@@ -15,10 +15,6 @@ defmodule FreshbooksApiClient.Schema.Project do
     field :bill_method, :string
     field :hour_budget, :decimal
 
-    belongs_to :client, FreshbooksApiClient.Schema.Client
-
-    # Figure out how to do embdes
-    # embeds_many :tasks, Task
-    # embeds_many :staff, Staff
+    belongs_to :client, FreshbooksApiClient.Schema.Client, references: :client_id
   end
 end
