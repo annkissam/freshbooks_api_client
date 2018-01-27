@@ -53,6 +53,13 @@ defmodule FreshbooksApiClient.Context do
     FreshbooksApiClient.Interface.call(FreshbooksApiClient.Interface.Staff, :get, [staff_id: staff_id])
   end
 
+  # NOTE: This requires calling list_staff and so it's not performant.
+  # You should use a cached value if possible and store this response.
+  def get_staff_by_email(email) do
+    list_staff()
+    |> Enum.find(&(&1.email == email))
+  end
+
   # https://www.freshbooks.com/developers/docs/tasks#task.list
   def list_tasks() do
     FreshbooksApiClient.Interface.all(FreshbooksApiClient.Interface.Tasks)
