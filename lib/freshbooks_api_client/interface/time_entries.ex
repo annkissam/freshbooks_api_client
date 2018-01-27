@@ -30,43 +30,14 @@ defmodule FreshbooksApiClient.Interface.TimeEntries do
   def xml_spec do
     [
       time_entry_id: ~x"./time_entry_id/text()"i,
-      hours: ~x"./hours/text()"s,
-      date: ~x"./date/text()"s,
+      hours: ~x"./hours/text()"s |> transform_by(&parse_decimal/1),
+      date: ~x"./date/text()"s |> transform_by(&parse_date/1),
       notes: ~x"./notes/text()"s,
-      billed: ~x"./billed/text()"s,
+      billed: ~x"./billed/text()"s |> transform_by(&parse_boolean/1),
       staff_id: ~x"./staff_id/text()"i,
       project_id: ~x"./project_id/text()"i,
       task_id: ~x"./task_id/text()"i,
     ]
   end
 
-  def transform(field, params) when field in [:hours] do
-    Map.update!(params, field, fn curr ->
-      case curr do
-        "" -> nil
-        _ ->
-          curr
-          |> Decimal.new
-      end
-    end)
-  end
-
-  def transform(field, params) when field in [:date] do
-    Map.update!(params, field, fn curr ->
-      case curr do
-        "" -> nil
-        _ ->
-          # Some date's also have a time component: 2018-01-01 00:00:00
-          String.split(curr, " ")
-          |> List.first
-          |> Date.from_iso8601!
-      end
-    end)
-  end
-
-  def transform(field, params) when field in [:billed] do
-    Map.update!(params, field, &(&1 == "1"))
-  end
-
-  def transform(_field, params), do: params
 end

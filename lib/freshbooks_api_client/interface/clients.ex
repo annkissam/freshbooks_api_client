@@ -35,5 +35,4 @@ defmodule FreshbooksApiClient.Interface.Clients do
     ]
   end
 
-  def transform(_field, params), do: params
 end

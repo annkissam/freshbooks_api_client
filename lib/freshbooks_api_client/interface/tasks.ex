@@ -31,26 +31,10 @@ defmodule FreshbooksApiClient.Interface.Tasks do
     [
       task_id: ~x"./task_id/text()"i,
       name: ~x"./name/text()"s,
-      billable: ~x"./billable/text()"s,
-      rate: ~x"./rate/text()"s,
+      billable: ~x"./billable/text()"s |> transform_by(&parse_boolean/1),
+      rate: ~x"./rate/text()"s |> transform_by(&parse_decimal/1),
       description: ~x"./description/text()"s,
     ]
   end
 
-  def transform(field, params) when field in [:rate] do
-    Map.update!(params, field, fn curr ->
-      case curr do
-        "" -> nil
-        _ ->
-          curr
-          |> Decimal.new
-      end
-    end)
-  end
-
-  def transform(field, params) when field in [:billable] do
-    Map.update!(params, field, &(&1 == "1"))
-  end
-
-  def transform(_field, params), do: params
 end

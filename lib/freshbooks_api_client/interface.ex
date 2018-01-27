@@ -19,8 +19,6 @@ defmodule FreshbooksApiClient.Interface do
   * delete(params, caller) -> Deletes an existing resource from Freshbooks.
   * list(params, caller) -> Retrieves a list of existing resources from Freshbooks.
   * translate(caller, action, response) -> Translates a response to a Schema struct.
-  * transform(field, params) -> Transforms a field in params from string to
-            another type.
   * to_schema(params) -> Converts the params to the specified schema struct.
   """
 
@@ -119,11 +117,7 @@ defmodule FreshbooksApiClient.Interface do
       def translate(_, _, {:error, :conn}), do: raise "HTTP Connection Error!"
 
       def translate(FreshbooksApiClient.Caller.HttpXml, :get, {:ok, xml}) do
-        {parent, spec} = apply(__MODULE__, :xml_parent_spec, [:get])
-
-        xml
-        |> xpath(parent, spec)
-        |> to_schema()
+        FreshbooksApiClient.Interface.translate(__MODULE__, unquote(schema), FreshbooksApiClient.Caller.HttpXml, :get, {:ok, xml})
       end
 
       def translate(FreshbooksApiClient.Caller.HttpXml, :list, {:ok, xml}) do
@@ -135,14 +129,36 @@ defmodule FreshbooksApiClient.Interface do
       end
 
       defp to_schema(params) do
-        FreshbooksApiClient.Interface.to_schema(__MODULE__, unquote(schema), params)
+        FreshbooksApiClient.Interface.to_schema(unquote(schema), params)
       end
 
-      def transform(_field, params), do: params
+      def parse_date(value) do
+        FreshbooksApiClient.Interface.parse_date(value)
+      end
 
-      defoverridable [{:translate, 3}, {:transform, 2}
-                      | Enum.map(unquote(allowed), &{&1, 2})]
+      def parse_decimal(value) do
+        FreshbooksApiClient.Interface.parse_decimal(value)
+      end
+
+      def parse_boolean(value) do
+        FreshbooksApiClient.Interface.parse_boolean(value)
+      end
+
+      def parse_datetime(value) do
+        FreshbooksApiClient.Interface.parse_datetime(value)
+      end
+
+      defoverridable [{:translate, 3} | Enum.map(unquote(allowed), &{&1, 2})]
     end
+  end
+
+  def translate(interface, schema, FreshbooksApiClient.Caller.HttpXml, :get, {:ok, xml}) do
+    {parent, spec} = apply(interface, :xml_parent_spec, [:get])
+
+    params = xml
+    |> xpath(parent, spec)
+
+    to_schema(schema, params)
   end
 
   def translate(interface, schema, FreshbooksApiClient.Caller.HttpXml, :list, {:ok, xml}) do
@@ -156,15 +172,7 @@ defmodule FreshbooksApiClient.Interface do
 
     resources = xml
       |> xpath(parent, spec)
-      |> Enum.map(&(to_schema(interface, schema, &1)))
-
-    # schema.__schema__(:embeds)
-    # [:lines]
-
-    # schema.__schema__(:embed, :lines)
-    # %Ecto.Embedded{cardinality: :many, field: :lines, on_cast: nil,
-    #  on_replace: :raise, owner: FreshbooksApiClient.Schema.Invoice,
-    #  related: FreshbooksApiClient.Schema.InvoiceLine, unique: true}
+      |> Enum.map(&(to_schema(schema, &1)))
 
     %{
       per_page: per_page,
@@ -175,12 +183,8 @@ defmodule FreshbooksApiClient.Interface do
     }
   end
 
-  def to_schema(interface, schema, params) do
-    castable_params = schema
-      |> apply(:__schema__, [:fields])
-      |> Enum.reduce(params, &(apply(interface, :transform, [&1, &2])))
-
-    struct!(schema, castable_params)
+  def to_schema(schema, params) do
+    struct!(schema, params)
   end
 
   def call(interface, method, params \\ []) do
@@ -232,6 +236,35 @@ defmodule FreshbooksApiClient.Interface do
 
         acc ++ results[:resources]
       end)
+    end
+  end
+
+  def parse_date(value) do
+    case value do
+      "" -> nil
+      _ ->
+        # Some date's also have a time component: 2018-01-01 00:00:00
+        String.split(value, " ")
+        |> List.first
+        |> Date.from_iso8601!
+    end
+  end
+
+  def parse_decimal(value) do
+    case value do
+      "" -> nil
+      _ -> Decimal.new(value)
+    end
+  end
+
+  def parse_boolean(value) do
+    value == "1"
+  end
+
+  def parse_datetime(value) do
+    case value do
+      "" -> nil
+      _ -> NaiveDateTime.from_iso8601!(value)
     end
   end
 end

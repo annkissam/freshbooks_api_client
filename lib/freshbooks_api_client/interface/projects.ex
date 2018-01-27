@@ -31,23 +31,11 @@ defmodule FreshbooksApiClient.Interface.Projects do
       project_id: ~x"./project_id/text()"i,
       name: ~x"./name/text()"s,
       description: ~x"./description/text()"s,
-      rate: ~x"./rate/text()"s,
+      rate: ~x"./rate/text()"s |> transform_by(&parse_decimal/1),
       bill_method: ~x"./bill_method/text()"s,
-      hour_budget: ~x"./hour_budget/text()"s,
+      hour_budget: ~x"./hour_budget/text()"s |> transform_by(&parse_decimal/1),
       client_id: ~x"./client_id/text()"Io,
     ]
   end
 
-  def transform(field, params) when field in [:hour_budget, :rate] do
-    Map.update!(params, field, fn curr ->
-      case curr do
-        "" -> nil
-        _ ->
-          curr
-          |> Decimal.new
-      end
-    end)
-  end
-
-  def transform(_field, params), do: params
 end
