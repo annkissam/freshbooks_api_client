@@ -5,7 +5,7 @@ defmodule FreshbooksApiClient.Schema.Client do
   It uses a FreshbooksApiClient.Schema
   """
 
-  use FreshbooksApiClient.Schema, resource: "client"
+  use FreshbooksApiClient.Schema
 
   api_schema do
     field :client_id, :integer

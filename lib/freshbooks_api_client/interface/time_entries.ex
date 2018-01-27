@@ -10,7 +10,8 @@ defmodule FreshbooksApiClient.Interface.TimeEntries do
 
   alias FreshbooksApiClient.Schema.TimeEntry
 
-  use FreshbooksApiClient.Interface, schema: TimeEntry
+  use FreshbooksApiClient.Interface, schema: TimeEntry, resource: "time_entry",
+    resources: "time_entries"
 
   def xml_parent_spec(:list) do
     {

@@ -10,7 +10,7 @@ defmodule FreshbooksApiClient.Interface.Tasks do
 
   alias FreshbooksApiClient.Schema.Task
 
-  use FreshbooksApiClient.Interface, schema: Task, allow: ~w(get list)a
+  use FreshbooksApiClient.Interface, schema: Task, allow: ~w(get list)a, resource: "task"
 
   def xml_parent_spec(:list) do
     {

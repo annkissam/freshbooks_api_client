@@ -5,7 +5,7 @@ defmodule FreshbooksApiClient.Schema.Task do
   It uses a FreshbooksApiClient.Schema
   """
 
-  use FreshbooksApiClient.Schema, resource: "task"
+  use FreshbooksApiClient.Schema
 
   api_schema do
     field :task_id, :integer

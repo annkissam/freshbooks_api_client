@@ -18,9 +18,6 @@ defmodule FreshbooksApiClient.Schema do
                   Freshbook's API response.
   """
 
-  @callback resource() :: String.t()
-  @callback resources() :: String.t()
-
   @doc ~S(Facebooks abstraction for an ecto embedded schema)
   defmacro api_schema(do: fields) do
     quote do
@@ -42,22 +39,22 @@ defmodule FreshbooksApiClient.Schema do
 
       @behaviour unquote(__MODULE__)
 
-      def resource() do
-        case unquote(resource) do
-          n when is_binary(n) -> n
-          nil -> raise "resource/0 not implement for #{__MODULE__}"
-          _ -> raise "resource given isn't a string for #{__MODULE__}"
-        end
-      end
+      # def resource() do
+      #   case unquote(resource) do
+      #     n when is_binary(n) -> n
+      #     nil -> raise "resource/0 not implement for #{__MODULE__}"
+      #     _ -> raise "resource given isn't a string for #{__MODULE__}"
+      #   end
+      # end
 
-      def resources() do
-        case unquote(resources) do
-          n when is_binary(n) -> n
-          nil -> resource <> "s"
-        end
-      end
+      # def resources() do
+      #   case unquote(resources) do
+      #     n when is_binary(n) -> n
+      #     nil -> resource <> "s"
+      #   end
+      # end
 
-      defoverridable [resource: 0, resources: 0]
+      # defoverridable [resource: 0, resources: 0]
     end
   end
 end

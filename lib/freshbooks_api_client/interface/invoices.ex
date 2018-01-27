@@ -10,7 +10,7 @@ defmodule FreshbooksApiClient.Interface.Invoices do
 
   alias FreshbooksApiClient.Schema.Invoice
 
-  use FreshbooksApiClient.Interface, schema: Invoice, allow: ~w(get list)a
+  use FreshbooksApiClient.Interface, schema: Invoice, allow: ~w(get list)a, resource: "invoice"
 
   def xml_parent_spec(:list) do
     {

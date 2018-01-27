@@ -5,7 +5,7 @@ defmodule FreshbooksApiClient.Schema.InvoiceLine do
   It uses a FreshbooksApiClient.Schema
   """
 
-  use FreshbooksApiClient.Schema, resource: "lines"
+  use FreshbooksApiClient.Schema
 
   api_schema do
     field :line_id, :integer

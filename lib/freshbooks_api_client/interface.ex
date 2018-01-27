@@ -43,23 +43,42 @@ defmodule FreshbooksApiClient.Interface do
   @callback delete(map, atom()) :: response()
   @callback list(map, atom()) :: response()
   @callback translate(atom(), atom(), term()) :: Ecto.Schema.t()
-  @callback tranform(atom(), map()) :: map()
   @callback to_schema(map()) :: Ecto.Schema.t()
+
+  @callback resource() :: String.t()
+  @callback resources() :: String.t()
 
   @doc ~S(A Simple way of accessing all of Interace's features)
   defmacro __using__(opts) do
     schema = Keyword.get(opts, :schema)
     allowed = Keyword.get(opts, :allow, @actions)
     interface = __MODULE__
+    resource = Keyword.get(opts, :resource)
+    resources = Keyword.get(opts, :resources)
 
     quote do
       import SweetXml
 
       @behaviour unquote(__MODULE__)
 
+      def resource() do
+        case unquote(resource) do
+          n when is_binary(n) -> n
+          nil -> raise "resource/0 not implement for #{__MODULE__}"
+          _ -> raise "resource given isn't a string for #{__MODULE__}"
+        end
+      end
+
+      def resources() do
+        case unquote(resources) do
+          n when is_binary(n) -> n
+          nil -> resource() <> "s"
+        end
+      end
+
       defp schema() do
         case unquote(schema) do
-          nil -> raise "resource/0 not implement for #{__MODULE__}"
+          nil -> raise "schema/0 not implement for #{__MODULE__}"
           _ -> unquote(schema)
         end
       end
@@ -67,7 +86,7 @@ defmodule FreshbooksApiClient.Interface do
       def create(params, caller \\ FreshbooksApiClient.Caller.HttpXml) do
         case Enum.member?(unquote(allowed), :create) do
           true ->
-            method = apply(unquote(schema), :resource, []) <> ".create"
+            method = resource() <> ".create"
             apply(caller, :run, [method, params])
             translate(caller, :create, apply(caller, :run, [method, params]))
           _ -> raise "action `:create` not allowed for #{unquote(schema)}"
@@ -77,7 +96,7 @@ defmodule FreshbooksApiClient.Interface do
       def update(params, caller \\ FreshbooksApiClient.Caller.HttpXml) do
         case Enum.member?(unquote(allowed), :update) do
           true ->
-            method = apply(unquote(schema), :resource, []) <> ".update"
+            method = resource() <> ".update"
             translate(caller, :update, apply(caller, :run, [method, params]))
           _ -> raise "action `:update` not allowed for #{unquote(schema)}"
         end
@@ -86,7 +105,7 @@ defmodule FreshbooksApiClient.Interface do
       def get(params, caller \\ FreshbooksApiClient.Caller.HttpXml) do
         case Enum.member?(unquote(allowed), :get) do
           true ->
-            method = apply(unquote(schema), :resource, []) <> ".get"
+            method = resource() <> ".get"
             translate(caller, :get, apply(caller, :run, [method, params]))
             _ -> raise "action `:get` not allowed for #{unquote(schema)}"
         end
@@ -95,7 +114,7 @@ defmodule FreshbooksApiClient.Interface do
       def delete(params, caller \\ FreshbooksApiClient.Caller.HttpXml) do
         case Enum.member?(unquote(allowed), :delete) do
           true ->
-            method = apply(unquote(schema), :resource, []) <> ".delete"
+            method = resource() <> ".delete"
             translate(caller, :delete, apply(caller, :run, [method, params]))
           _ -> raise "action `:delete` not allowed for #{unquote(schema)}"
         end
@@ -104,7 +123,7 @@ defmodule FreshbooksApiClient.Interface do
       def list(params \\ [], caller \\ FreshbooksApiClient.Caller.HttpXml) do
         case Enum.member?(unquote(allowed), :list) do
           true ->
-            method = apply(unquote(schema), :resource, []) <> ".list"
+            method = resource() <> ".list"
             translate(caller, :list, apply(caller, :run, [method, params]))
           _ -> raise "action `:list` not allowed for #{unquote(schema)}"
         end
@@ -148,7 +167,7 @@ defmodule FreshbooksApiClient.Interface do
         FreshbooksApiClient.Interface.parse_datetime(value)
       end
 
-      defoverridable [{:translate, 3} | Enum.map(unquote(allowed), &{&1, 2})]
+      defoverridable [{:resource, 0}, {:resources, 0}, {:translate, 3} | Enum.map(unquote(allowed), &{&1, 2})]
     end
   end
 
@@ -162,7 +181,7 @@ defmodule FreshbooksApiClient.Interface do
   end
 
   def translate(interface, schema, FreshbooksApiClient.Caller.HttpXml, :list, {:ok, xml}) do
-    resources_key = apply(schema, :resources, [])
+    resources_key = apply(interface, :resources, [])
     per_page = xml |> xpath(~x"//response/#{resources_key}/@per_page"s) |> String.to_integer()
     page = xml |> xpath(~x"//response/#{resources_key}/@page"s) |> String.to_integer()
     pages = xml |> xpath(~x"//response/#{resources_key}/@pages"s) |> String.to_integer()

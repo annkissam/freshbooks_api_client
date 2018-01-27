@@ -10,7 +10,7 @@ defmodule FreshbooksApiClient.Interface.Staff do
 
   alias FreshbooksApiClient.Schema.Staff
 
-  use FreshbooksApiClient.Interface, schema: Staff, allow: ~w(get list)a
+  use FreshbooksApiClient.Interface, schema: Staff, allow: ~w(get list)a, resource: "staff", resources: "staff_members"
 
   def xml_parent_spec(:list) do
     {

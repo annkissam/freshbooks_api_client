@@ -10,7 +10,7 @@ defmodule FreshbooksApiClient.Interface.Clients do
 
   alias FreshbooksApiClient.Schema.Client
 
-  use FreshbooksApiClient.Interface, schema: Client, allow: ~w(get list)a
+  use FreshbooksApiClient.Interface, schema: Client, allow: ~w(get list)a, resource: "client"
 
   def xml_parent_spec(:list) do
     {
