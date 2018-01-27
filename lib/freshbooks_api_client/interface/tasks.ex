@@ -16,7 +16,7 @@ defmodule FreshbooksApiClient.Interface.Tasks do
 
   def xml_parent_spec(:list) do
     {
-     ~x"//response/tasks/task"l,
+      ~x"//response/tasks/task"l,
       xml_spec()
     }
   end

@@ -16,7 +16,7 @@ defmodule FreshbooksApiClient.Interface.Invoices do
 
   def xml_parent_spec(:list) do
     {
-     ~x"//response/invoices/invoice"l,
+      ~x"//response/invoices/invoice"l,
       xml_spec()
     }
   end
