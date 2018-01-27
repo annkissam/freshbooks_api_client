@@ -19,7 +19,6 @@ defmodule FreshbooksApiClient.Interface do
   * delete(params, caller) -> Deletes an existing resource from Freshbooks.
   * list(params, caller) -> Retrieves a list of existing resources from Freshbooks.
   * translate(caller, action, response) -> Translates a response to a Schema struct.
-  * to_schema(params) -> Converts the params to the specified schema struct.
   """
 
   # alias FreshbooksApiClient.Caller.{HttpXml, InMemory}
@@ -43,7 +42,6 @@ defmodule FreshbooksApiClient.Interface do
   @callback delete(map, atom()) :: response()
   @callback list(map, atom()) :: response()
   @callback translate(atom(), atom(), term()) :: Ecto.Schema.t()
-  @callback to_schema(map()) :: Ecto.Schema.t()
 
   @callback resource() :: String.t()
   @callback resources() :: String.t()
@@ -84,17 +82,16 @@ defmodule FreshbooksApiClient.Interface do
         end
       end
 
-      def create(params, caller \\ FreshbooksApiClient.Caller.HttpXml) do
+      def create(caller, params) do
         case Enum.member?(unquote(allowed), :create) do
           true ->
             method = resource() <> ".create"
-            apply(caller, :run, [method, params])
             translate(caller, :create, apply(caller, :run, [method, params]))
           _ -> raise "action `:create` not allowed for #{unquote(schema)}"
         end
       end
 
-      def update(params, caller \\ FreshbooksApiClient.Caller.HttpXml) do
+      def update(caller, params) do
         case Enum.member?(unquote(allowed), :update) do
           true ->
             method = resource() <> ".update"
@@ -103,7 +100,7 @@ defmodule FreshbooksApiClient.Interface do
         end
       end
 
-      def get(params, caller \\ FreshbooksApiClient.Caller.HttpXml) do
+      def get(caller, params) do
         case Enum.member?(unquote(allowed), :get) do
           true ->
             method = resource() <> ".get"
@@ -112,7 +109,7 @@ defmodule FreshbooksApiClient.Interface do
         end
       end
 
-      def delete(params, caller \\ FreshbooksApiClient.Caller.HttpXml) do
+      def delete(caller, params) do
         case Enum.member?(unquote(allowed), :delete) do
           true ->
             method = resource() <> ".delete"
@@ -121,7 +118,7 @@ defmodule FreshbooksApiClient.Interface do
         end
       end
 
-      def list(params \\ [], caller \\ FreshbooksApiClient.Caller.HttpXml) do
+      def list(caller, params \\ []) do
         case Enum.member?(unquote(allowed), :list) do
           true ->
             method = resource() <> ".list"
@@ -136,20 +133,16 @@ defmodule FreshbooksApiClient.Interface do
 
       def translate(_, _, {:error, :conn}), do: raise "HTTP Connection Error!"
 
-      def translate(FreshbooksApiClient.Caller.HttpXml, :get, {:ok, xml}) do
-        FreshbooksApiClient.Interface.translate(__MODULE__, unquote(schema), FreshbooksApiClient.Caller.HttpXml, :get, {:ok, xml})
+      def translate(caller, :get, {:ok, xml}) do
+        FreshbooksApiClient.Interface.translate(__MODULE__, unquote(schema), caller, :get, {:ok, xml})
       end
 
-      def translate(FreshbooksApiClient.Caller.HttpXml, :list, {:ok, xml}) do
-        FreshbooksApiClient.Interface.translate(__MODULE__, unquote(schema), FreshbooksApiClient.Caller.HttpXml, :list, {:ok, xml})
+      def translate(caller, :list, {:ok, xml}) do
+        FreshbooksApiClient.Interface.translate(__MODULE__, unquote(schema), caller, :list, {:ok, xml})
       end
 
       def translate(_, _, _) do
         raise "translate/3 not implemented for #{__MODULE__}"
-      end
-
-      def to_schema(params) do
-        FreshbooksApiClient.Interface.to_schema(unquote(schema), params)
       end
 
       def parse_date(value) do
@@ -217,7 +210,7 @@ defmodule FreshbooksApiClient.Interface do
 
   # TODO: I'm not sure what a rate limit error looks like, but when we get one we need to raise this exception
   def call_without_retry(interface, method, params) do
-    apply(interface, method, [params])
+    apply(interface, method, [FreshbooksApiClient.caller(), params])
   end
 
   def all(interface, params \\ []) do
