@@ -9,6 +9,8 @@ defmodule FreshbooksApiClient.Caller.HttpXml do
 
   use FreshbooksApiClient.Caller
 
+  import SweetXml
+
   alias FreshbooksApiClient.Xml
 
   def run(method, params, opts \\ []) do
@@ -18,7 +20,11 @@ defmodule FreshbooksApiClient.Caller.HttpXml do
 
     case response do
       {:ok, %HTTPoison.Response{body: resp, status_code: 200}} ->
-        {:ok, resp}
+        status = resp |> xpath(~x"//response/@status"s)
+        # https://www.freshbooks.com/developers
+        # A successful call returns a status of "ok"
+        # An unsuccessful call returns a status of "fail"
+        {String.to_atom(status), resp}
       {:ok, %HTTPoison.Response{body: resp, status_code: 401}} ->
         {:error, :unauthorized}
       {:ok, %HTTPoison.Error{reason: _}} -> {:error, :conn}

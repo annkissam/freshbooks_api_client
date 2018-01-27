@@ -112,8 +112,12 @@ defmodule FreshbooksApiClient.Interface do
         end
       end
 
+      def translate(_, _, {:fail, xml}), do: raise "XML Error: #{xml}"
+
       def translate(_, _, {:error, :unauthorized}), do: raise "Unauthorized!"
+
       def translate(_, _, {:error, :conn}), do: raise "HTTP Connection Error!"
+
       def translate(FreshbooksApiClient.Caller.HttpXml, :get, {:ok, xml}) do
         {parent, spec} = apply(__MODULE__, :xml_parent_spec, [:get])
 
@@ -143,7 +147,6 @@ defmodule FreshbooksApiClient.Interface do
 
   def translate(interface, schema, FreshbooksApiClient.Caller.HttpXml, :list, {:ok, xml}) do
     resources_key = apply(schema, :resources, [])
-
     per_page = xml |> xpath(~x"//response/#{resources_key}/@per_page"s) |> String.to_integer()
     page = xml |> xpath(~x"//response/#{resources_key}/@page"s) |> String.to_integer()
     pages = xml |> xpath(~x"//response/#{resources_key}/@pages"s) |> String.to_integer()
