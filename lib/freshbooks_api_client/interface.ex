@@ -57,6 +57,7 @@ defmodule FreshbooksApiClient.Interface do
 
     quote do
       import SweetXml
+      import FreshbooksApiClient.Parser
 
       @behaviour unquote(__MODULE__)
 
@@ -152,22 +153,6 @@ defmodule FreshbooksApiClient.Interface do
 
       def translate(caller, method, {return, _data}) do
         raise "translate/3 not implemented for #{__MODULE__} w/ (#{caller}, :#{method}, {:#{return}, data})"
-      end
-
-      def parse_date(value) do
-        FreshbooksApiClient.Interface.parse_date(value)
-      end
-
-      def parse_decimal(value) do
-        FreshbooksApiClient.Interface.parse_decimal(value)
-      end
-
-      def parse_boolean(value) do
-        FreshbooksApiClient.Interface.parse_boolean(value)
-      end
-
-      def parse_datetime(value) do
-        FreshbooksApiClient.Interface.parse_datetime(value)
       end
 
       defoverridable [{:resource, 0}, {:resources, 0}, {:translate, 3} | Enum.map(unquote(allowed), &{&1, 2})]
@@ -290,35 +275,6 @@ defmodule FreshbooksApiClient.Interface do
 
         acc ++ results[:resources]
       end)
-    end
-  end
-
-  def parse_date(value) do
-    case value do
-      "" -> nil
-      _ ->
-        # Some date's also have a time component: 2018-01-01 00:00:00
-        String.split(value, " ")
-        |> List.first
-        |> Date.from_iso8601!
-    end
-  end
-
-  def parse_decimal(value) do
-    case value do
-      "" -> nil
-      _ -> Decimal.new(value)
-    end
-  end
-
-  def parse_boolean(value) do
-    value == "1"
-  end
-
-  def parse_datetime(value) do
-    case value do
-      "" -> nil
-      _ -> NaiveDateTime.from_iso8601!(value)
     end
   end
 end

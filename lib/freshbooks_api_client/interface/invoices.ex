@@ -6,8 +6,6 @@ defmodule FreshbooksApiClient.Interface.Invoices do
   It uses a FreshbooksApiClient.Interface
   """
 
-  import SweetXml
-
   use FreshbooksApiClient.Interface,
     schema: FreshbooksApiClient.Schema.Invoice,
     resources: "invoices",

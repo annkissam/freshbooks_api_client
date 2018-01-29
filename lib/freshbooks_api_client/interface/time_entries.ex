@@ -6,8 +6,6 @@ defmodule FreshbooksApiClient.Interface.TimeEntries do
   It uses a FreshbooksApiClient.Interface
   """
 
-  import SweetXml
-
   use FreshbooksApiClient.Interface,
     schema: FreshbooksApiClient.Schema.TimeEntry,
     resources: "time_entries",

@@ -6,8 +6,6 @@ defmodule FreshbooksApiClient.Interface.Projects do
   It uses a FreshbooksApiClient.Interface
   """
 
-  import SweetXml
-
   use FreshbooksApiClient.Interface,
     schema: FreshbooksApiClient.Schema.Project,
     resources: "projects",

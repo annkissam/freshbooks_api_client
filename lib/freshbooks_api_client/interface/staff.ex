@@ -6,8 +6,6 @@ defmodule FreshbooksApiClient.Interface.Staff do
   It uses a FreshbooksApiClient.Interface
   """
 
-  import SweetXml
-
   use FreshbooksApiClient.Interface,
     schema: FreshbooksApiClient.Schema.Staff,
     resources: "staff_members",
