@@ -141,4 +141,11 @@ defmodule FreshbooksApiClient.ApiBase do
       end)
     end
   end
+
+  # def struct_to_interface(FreshbooksApiClient.Schema.Client), do: FreshbooksApiClient.Interface.Clients
+  # def struct_to_interface(FreshbooksApiClient.Schema.Invoice), do: FreshbooksApiClient.Interface.Invoices
+  # def struct_to_interface(FreshbooksApiClient.Schema.Project), do: FreshbooksApiClient.Interface.Projects
+  # def struct_to_interface(FreshbooksApiClient.Schema.Staff), do: FreshbooksApiClient.Interface.Staff
+  # def struct_to_interface(FreshbooksApiClient.Schema.Task), do: FreshbooksApiClient.Interface.Tasks
+  # def struct_to_interface(FreshbooksApiClient.Schema.TimeEntry), do: FreshbooksApiClient.Interface.TimeEntries
 end
