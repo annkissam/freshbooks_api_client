@@ -83,6 +83,26 @@ defmodule FreshbooksApiClient.Interface do
         end
       end
 
+      def list(api, params \\ []) do
+        caller = api.caller()
+        case Enum.member?(unquote(allowed), :list) do
+          true ->
+            method = resource() <> ".list"
+            translate(caller, :list, apply(caller, :run, [api, method, params]))
+          _ -> raise "action `:list` not allowed for #{unquote(schema)}"
+        end
+      end
+
+      def get(api, params) do
+        caller = api.caller()
+        case Enum.member?(unquote(allowed), :get) do
+          true ->
+            method = resource() <> ".get"
+            translate(caller, :get, apply(caller, :run, [api, method, params]))
+            _ -> raise "action `:get` not allowed for #{unquote(schema)}"
+        end
+      end
+
       def create(api, params) do
         caller = api.caller()
         case Enum.member?(unquote(allowed), :create) do
@@ -103,23 +123,6 @@ defmodule FreshbooksApiClient.Interface do
         end
       end
 
-      def get(api, params) do
-        caller = api.caller()
-        case Enum.member?(unquote(allowed), :get) do
-          true ->
-            method = resource() <> ".get"
-            translate(caller, :get, apply(caller, :run, [api, method, params]))
-            _ -> raise "action `:get` not allowed for #{unquote(schema)}"
-        end
-      end
-
-      def get!(api, params) do
-        case get(api, params) do
-          {:ok, resource} -> resource
-          {:error, errors} -> raise FreshbooksApiClient.NoResultsError
-        end
-      end
-
       def delete(api, params) do
         caller = api.caller()
         case Enum.member?(unquote(allowed), :delete) do
@@ -127,16 +130,6 @@ defmodule FreshbooksApiClient.Interface do
             method = resource() <> ".delete"
             translate(caller, :delete, apply(caller, :run, [api, method, params]))
           _ -> raise "action `:delete` not allowed for #{unquote(schema)}"
-        end
-      end
-
-      def list(api, params \\ []) do
-        caller = api.caller()
-        case Enum.member?(unquote(allowed), :list) do
-          true ->
-            method = resource() <> ".list"
-            translate(caller, :list, apply(caller, :run, [api, method, params]))
-          _ -> raise "action `:list` not allowed for #{unquote(schema)}"
         end
       end
 
@@ -179,32 +172,6 @@ defmodule FreshbooksApiClient.Interface do
     {:error, errors}
   end
 
-  def translate(interface, _schema, FreshbooksApiClient.Caller.HttpXml, :create, {:ok, xml}) do
-    {parent, spec} = apply(interface, :xml_parent_spec, [:create])
-
-    params = xml
-    |> xpath(parent, spec)
-
-    {:ok, params}
-  end
-
-  def translate(_interface, _schema, FreshbooksApiClient.Caller.HttpXml, :update, {:ok, _xml}) do
-    {:ok, nil}
-  end
-
-  def translate(_interface, _schema, FreshbooksApiClient.Caller.HttpXml, :delete, {:ok, _xml}) do
-    {:ok, nil}
-  end
-
-  def translate(interface, schema, FreshbooksApiClient.Caller.HttpXml, :get, {:ok, xml}) do
-    {parent, spec} = apply(interface, :xml_parent_spec, [:get])
-
-    params = xml
-    |> xpath(parent, spec)
-
-    {:ok, to_schema(schema, params)}
-  end
-
   def translate(interface, schema, FreshbooksApiClient.Caller.HttpXml, :list, {:ok, xml}) do
     resources_key = apply(interface, :resources, [])
     per_page = xml |> xpath(~x"//response/#{resources_key}/@per_page"s) |> String.to_integer()
@@ -225,6 +192,32 @@ defmodule FreshbooksApiClient.Interface do
       total: total,
       resources: resources,
     }
+  end
+
+  def translate(interface, schema, FreshbooksApiClient.Caller.HttpXml, :get, {:ok, xml}) do
+    {parent, spec} = apply(interface, :xml_parent_spec, [:get])
+
+    params = xml
+    |> xpath(parent, spec)
+
+    {:ok, to_schema(schema, params)}
+  end
+
+  def translate(interface, _schema, FreshbooksApiClient.Caller.HttpXml, :create, {:ok, xml}) do
+    {parent, spec} = apply(interface, :xml_parent_spec, [:create])
+
+    params = xml
+    |> xpath(parent, spec)
+
+    {:ok, params}
+  end
+
+  def translate(_interface, _schema, FreshbooksApiClient.Caller.HttpXml, :update, {:ok, _xml}) do
+    {:ok, nil}
+  end
+
+  def translate(_interface, _schema, FreshbooksApiClient.Caller.HttpXml, :delete, {:ok, _xml}) do
+    {:ok, nil}
   end
 
   def to_schema(schema, params) do
