@@ -109,6 +109,13 @@ defmodule FreshbooksApiClient.Interface do
         end
       end
 
+      def get!(caller, params) do
+        case get(caller, params) do
+          {:ok, resource} -> resource
+          {:error, errors} -> raise FreshbooksApiClient.NoResultsError
+        end
+      end
+
       def delete(caller, params) do
         case Enum.member?(unquote(allowed), :delete) do
           true ->
@@ -127,22 +134,24 @@ defmodule FreshbooksApiClient.Interface do
         end
       end
 
-      def translate(_, _, {:fail, xml}), do: raise "XML Error: #{xml}"
+      def translate(FreshbooksApiClient.Caller.HttpXml, method, {:fail, xml}) when method in [:create, :update, :get, :delete] do
+        FreshbooksApiClient.Interface.translate(__MODULE__, unquote(schema), FreshbooksApiClient.Caller.HttpXml, method, {:fail, xml})
+      end
+
+      def translate(FreshbooksApiClient.Caller.HttpXml, method, {:fail, xml}) do
+        raise "XML Error: #{xml}"
+      end
 
       def translate(_, _, {:error, :unauthorized}), do: raise "Unauthorized!"
 
       def translate(_, _, {:error, :conn}), do: raise "HTTP Connection Error!"
 
-      def translate(caller, :get, {:ok, xml}) do
-        FreshbooksApiClient.Interface.translate(__MODULE__, unquote(schema), caller, :get, {:ok, xml})
+      def translate(caller, method, {:ok, xml}) when method in [:create, :update, :delete, :get, :list] do
+        FreshbooksApiClient.Interface.translate(__MODULE__, unquote(schema), caller, method, {:ok, xml})
       end
 
-      def translate(caller, :list, {:ok, xml}) do
-        FreshbooksApiClient.Interface.translate(__MODULE__, unquote(schema), caller, :list, {:ok, xml})
-      end
-
-      def translate(_, _, _) do
-        raise "translate/3 not implemented for #{__MODULE__}"
+      def translate(caller, method, {return, _data}) do
+        raise "translate/3 not implemented for #{__MODULE__} w/ (#{caller}, :#{method}, {:#{return}, data})"
       end
 
       def parse_date(value) do
@@ -165,13 +174,45 @@ defmodule FreshbooksApiClient.Interface do
     end
   end
 
+  # TODO: Does this capture all errors?
+  def translate(interface, schema, FreshbooksApiClient.Caller.HttpXml, _method, {:fail, xml}) do
+    parent = ~x"//response"
+    spec = [
+      error: ~x"./error/text()"s,
+      code: ~x"./code/text()"i,
+      field: ~x"./field/text()"os,
+    ]
+
+    errors = xml
+    |> xpath(parent, spec)
+
+    {:error, errors}
+  end
+
+  def translate(interface, schema, FreshbooksApiClient.Caller.HttpXml, :create, {:ok, xml}) do
+    {parent, spec} = apply(interface, :xml_parent_spec, [:create])
+
+    params = xml
+    |> xpath(parent, spec)
+
+    {:ok, params}
+  end
+
+  def translate(interface, schema, FreshbooksApiClient.Caller.HttpXml, :update, {:ok, xml}) do
+    {:ok, nil}
+  end
+
+  def translate(interface, schema, FreshbooksApiClient.Caller.HttpXml, :delete, {:ok, xml}) do
+    {:ok, nil}
+  end
+
   def translate(interface, schema, FreshbooksApiClient.Caller.HttpXml, :get, {:ok, xml}) do
     {parent, spec} = apply(interface, :xml_parent_spec, [:get])
 
     params = xml
     |> xpath(parent, spec)
 
-    to_schema(schema, params)
+    {:ok, to_schema(schema, params)}
   end
 
   def translate(interface, schema, FreshbooksApiClient.Caller.HttpXml, :list, {:ok, xml}) do

@@ -27,6 +27,15 @@ defmodule FreshbooksApiClient.Interface.TimeEntries do
     }
   end
 
+  def xml_parent_spec(:create) do
+    {
+      ~x"//response",
+      [
+        time_entry_id: ~x"./time_entry_id/text()"i,
+      ]
+    }
+  end
+
   def xml_spec do
     [
       time_entry_id: ~x"./time_entry_id/text()"i,

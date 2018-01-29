@@ -105,3 +105,7 @@ defmodule FreshbooksApiClient.PaginationError do
   defexception message: "the total_count changed while retrieving results"
 end
 
+defmodule FreshbooksApiClient.NoResultsError do
+  defexception message: "No Results"
+end
+

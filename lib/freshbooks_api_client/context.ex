@@ -21,8 +21,8 @@ defmodule FreshbooksApiClient.Context do
     FreshbooksApiClient.Interface.all(FreshbooksApiClient.Interface.Clients)
   end
 
-  def get_client(client_id) do
-    FreshbooksApiClient.Interface.call(FreshbooksApiClient.Interface.Clients, :get, [client_id: client_id])
+  def get_client!(client_id) do
+    FreshbooksApiClient.Interface.call(FreshbooksApiClient.Interface.Clients, :get!, [client_id: client_id])
   end
 
   # https://www.freshbooks.com/developers/docs/invoices#invoice.list
@@ -31,8 +31,8 @@ defmodule FreshbooksApiClient.Context do
     FreshbooksApiClient.Interface.all(FreshbooksApiClient.Interface.Invoices, [date_from: date, date_to: date])
   end
 
-  def get_invoice(invoice_id) do
-    FreshbooksApiClient.Interface.call(FreshbooksApiClient.Interface.Invoices, :get, [invoice_id: invoice_id])
+  def get_invoice!(invoice_id) do
+    FreshbooksApiClient.Interface.call(FreshbooksApiClient.Interface.Invoices, :get!, [invoice_id: invoice_id])
   end
 
   # https://www.freshbooks.com/developers/docs/projects#project.list
@@ -40,8 +40,8 @@ defmodule FreshbooksApiClient.Context do
     FreshbooksApiClient.Interface.all(FreshbooksApiClient.Interface.Projects)
   end
 
-  def get_project(project_id) do
-    FreshbooksApiClient.Interface.call(FreshbooksApiClient.Interface.Projects, :get, [project_id: project_id])
+  def get_project!(project_id) do
+    FreshbooksApiClient.Interface.call(FreshbooksApiClient.Interface.Projects, :get!, [project_id: project_id])
   end
 
   # https://www.freshbooks.com/developers/docs/staff#staff.list
@@ -49,8 +49,8 @@ defmodule FreshbooksApiClient.Context do
     FreshbooksApiClient.Interface.all(FreshbooksApiClient.Interface.Staff)
   end
 
-  def get_staff(staff_id) do
-    FreshbooksApiClient.Interface.call(FreshbooksApiClient.Interface.Staff, :get, [staff_id: staff_id])
+  def get_staff!(staff_id) do
+    FreshbooksApiClient.Interface.call(FreshbooksApiClient.Interface.Staff, :get!, [staff_id: staff_id])
   end
 
   # NOTE: This requires calling list_staff and so it's not performant.
@@ -65,8 +65,8 @@ defmodule FreshbooksApiClient.Context do
     FreshbooksApiClient.Interface.all(FreshbooksApiClient.Interface.Tasks)
   end
 
-  def get_task(task_id) do
-    FreshbooksApiClient.Interface.call(FreshbooksApiClient.Interface.Tasks, :get, [task_id: task_id])
+  def get_task!(task_id) do
+    FreshbooksApiClient.Interface.call(FreshbooksApiClient.Interface.Tasks, :get!, [task_id: task_id])
   end
 
   # https://www.freshbooks.com/developers/docs/time-entries#time_entry.list
@@ -75,7 +75,25 @@ defmodule FreshbooksApiClient.Context do
     FreshbooksApiClient.Interface.all(FreshbooksApiClient.Interface.TimeEntries, [date_from: date, date_to: date])
   end
 
-  def get_time_entry(time_entry_id) do
-    FreshbooksApiClient.Interface.call(FreshbooksApiClient.Interface.TimeEntries, :get, [time_entry_id: time_entry_id])
+  def get_time_entry!(time_entry_id) do
+    FreshbooksApiClient.Interface.call(FreshbooksApiClient.Interface.TimeEntries, :get!, [time_entry_id: time_entry_id])
   end
+
+  # {:ok, TimeEntry%{}} | {:error, errors}
+  # def create_time_entry(params) do
+  #
+  # end
+
+  # {:ok, TimeEntry%{}} | {:error, errors}
+  # def update_time_entry(time_entry, params) do
+
+  # end
+
+  # {:ok, time_entry} = FreshbooksApiClient.Interface.TimeEntries.update(caller, time_entry_id: 1578296, notes: "Another Test")
+  # {:ok, time_entry} = FreshbooksApiClient.Interface.TimeEntries.update(caller, %{time_entry_id: 1578296}, notes: "Another Test")
+  # {:ok, time_entry} = FreshbooksApiClient.Interface.TimeEntries.update(caller, time_entry, notes: "Another Test")
+
+  # def delete_time_entry(time_entry) do
+  #   {:ok, TimeEntry%{}} | {:error, errors}
+  # end
 end
