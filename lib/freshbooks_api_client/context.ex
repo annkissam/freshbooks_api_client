@@ -1,20 +1,14 @@
 defmodule FreshbooksApiClient.Context do
   @moduledoc """
-  This module is the main bridge of communication with Freshbooks keeping all the
-  FreshbooksApiClient settings and app configurations.
+
+  This is an EXAMPLE context. It's uses the EXAMPLE FreshbooksApiClient.Api,
+  which is also functional. To quickly get started, feel free to use this module
+  or create your own.
 
   # Usage:
 
     FreshbooksApiClient.Context.list_tasks()
   """
-
-  # config :freshbooks_api_client, FreshbooksApiClient.Context,
-  #   caller: FreshbooksApiClient.Caller.HttpXml
-  #   token: System.get_env("FRESHBOOKS_API_TOKEN"),
-  #   subdomain: System.get_env("FRESHBOOKS_API_SUBDOMAIN")
-
-  # use Freshbooks.Client, otp_app: :freshbooks_api_client
-  # Pass the caller into the interface...
 
   # https://www.freshbooks.com/developers/docs/clients#client.list
   def list_clients() do
@@ -79,21 +73,19 @@ defmodule FreshbooksApiClient.Context do
     FreshbooksApiClient.Api.get!(FreshbooksApiClient.Interface.TimeEntries, [time_entry_id: time_entry_id])
   end
 
-  # {:ok, TimeEntry%{}} | {:error, errors}
-  # def create_time_entry(params) do
-  #
-  # end
+  # {:ok, %{time_entry_id: 1578774}} | {:error, errors}
+  def create_time_entry(params) do
+    FreshbooksApiClient.Api.create(FreshbooksApiClient.Interface.TimeEntries, params)
+  end
 
-  # {:ok, TimeEntry%{}} | {:error, errors}
-  # def update_time_entry(time_entry, params) do
+  # {:ok, nil} | {:error, errors}
+  def update_time_entry(%{time_entry_id: time_entry_id}, params) do
+    params = Map.merge(params, %{time_entry_id: time_entry_id})
+    FreshbooksApiClient.Api.update(FreshbooksApiClient.Interface.TimeEntries, params)
+  end
 
-  # end
-
-  # {:ok, time_entry} = FreshbooksApiClient.Interface.TimeEntries.update(caller, time_entry_id: 1578296, notes: "Another Test")
-  # {:ok, time_entry} = FreshbooksApiClient.Interface.TimeEntries.update(caller, %{time_entry_id: 1578296}, notes: "Another Test")
-  # {:ok, time_entry} = FreshbooksApiClient.Interface.TimeEntries.update(caller, time_entry, notes: "Another Test")
-
-  # def delete_time_entry(time_entry) do
-  #   {:ok, TimeEntry%{}} | {:error, errors}
-  # end
+  # {:ok, nil} | {:error, errors}
+  def delete_time_entry(%{time_entry_id: time_entry_id}) do
+    FreshbooksApiClient.Api.delete(FreshbooksApiClient.Interface.TimeEntries, [time_entry_id: time_entry_id])
+  end
 end

@@ -1,4 +1,10 @@
 defmodule FreshbooksApiClient.ApiBase do
+  @moduledoc """
+
+  TODO
+
+  """
+
   defmacro __using__(opts) do
     otp_app = Keyword.get(opts, :otp_app)
 
