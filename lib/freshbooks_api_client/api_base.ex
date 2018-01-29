@@ -65,8 +65,7 @@ defmodule FreshbooksApiClient.ApiBase do
 
   # TODO: I'm not sure what a rate limit error looks like, but when we get one we need to raise this exception
   def call_without_retry(module, interface, method, params) do
-    caller = module.caller()
-    apply(interface, method, [caller, params])
+    apply(interface, method, [module, params])
   end
 
   def all(module, interface, params \\ []) do

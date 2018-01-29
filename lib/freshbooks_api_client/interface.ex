@@ -83,54 +83,59 @@ defmodule FreshbooksApiClient.Interface do
         end
       end
 
-      def create(caller, params) do
+      def create(api, params) do
+        caller = api.caller()
         case Enum.member?(unquote(allowed), :create) do
           true ->
             method = resource() <> ".create"
-            translate(caller, :create, apply(caller, :run, [method, params]))
+            translate(caller, :create, apply(caller, :run, [api, method, params]))
           _ -> raise "action `:create` not allowed for #{unquote(schema)}"
         end
       end
 
-      def update(caller, params) do
+      def update(api, params) do
+        caller = api.caller()
         case Enum.member?(unquote(allowed), :update) do
           true ->
             method = resource() <> ".update"
-            translate(caller, :update, apply(caller, :run, [method, params]))
+            translate(caller, :update, apply(caller, :run, [api, method, params]))
           _ -> raise "action `:update` not allowed for #{unquote(schema)}"
         end
       end
 
-      def get(caller, params) do
+      def get(api, params) do
+        caller = api.caller()
         case Enum.member?(unquote(allowed), :get) do
           true ->
             method = resource() <> ".get"
-            translate(caller, :get, apply(caller, :run, [method, params]))
+            translate(caller, :get, apply(caller, :run, [api, method, params]))
             _ -> raise "action `:get` not allowed for #{unquote(schema)}"
         end
       end
 
-      def get!(caller, params) do
-        case get(caller, params) do
+      def get!(api, params) do
+        case get(api, params) do
           {:ok, resource} -> resource
           {:error, errors} -> raise FreshbooksApiClient.NoResultsError
         end
       end
 
-      def delete(caller, params) do
+      def delete(api, params) do
+        caller = api.caller()
         case Enum.member?(unquote(allowed), :delete) do
           true ->
             method = resource() <> ".delete"
-            translate(caller, :delete, apply(caller, :run, [method, params]))
+            translate(caller, :delete, apply(caller, :run, [api, method, params]))
           _ -> raise "action `:delete` not allowed for #{unquote(schema)}"
         end
       end
 
-      def list(caller, params \\ []) do
+      def list(api, params \\ []) do
+        caller = api.caller()
         case Enum.member?(unquote(allowed), :list) do
           true ->
             method = resource() <> ".list"
-            translate(caller, :list, apply(caller, :run, [method, params]))
+            translate(caller, :list, apply(caller, :run, [api, method, params]))
           _ -> raise "action `:list` not allowed for #{unquote(schema)}"
         end
       end
@@ -160,7 +165,7 @@ defmodule FreshbooksApiClient.Interface do
   end
 
   # TODO: Does this capture all errors?
-  def translate(interface, schema, FreshbooksApiClient.Caller.HttpXml, _method, {:fail, xml}) do
+  def translate(_interface, _schema, FreshbooksApiClient.Caller.HttpXml, _method, {:fail, xml}) do
     parent = ~x"//response"
     spec = [
       error: ~x"./error/text()"s,
@@ -174,7 +179,7 @@ defmodule FreshbooksApiClient.Interface do
     {:error, errors}
   end
 
-  def translate(interface, schema, FreshbooksApiClient.Caller.HttpXml, :create, {:ok, xml}) do
+  def translate(interface, _schema, FreshbooksApiClient.Caller.HttpXml, :create, {:ok, xml}) do
     {parent, spec} = apply(interface, :xml_parent_spec, [:create])
 
     params = xml
@@ -183,11 +188,11 @@ defmodule FreshbooksApiClient.Interface do
     {:ok, params}
   end
 
-  def translate(interface, schema, FreshbooksApiClient.Caller.HttpXml, :update, {:ok, xml}) do
+  def translate(_interface, _schema, FreshbooksApiClient.Caller.HttpXml, :update, {:ok, _xml}) do
     {:ok, nil}
   end
 
-  def translate(interface, schema, FreshbooksApiClient.Caller.HttpXml, :delete, {:ok, xml}) do
+  def translate(_interface, _schema, FreshbooksApiClient.Caller.HttpXml, :delete, {:ok, _xml}) do
     {:ok, nil}
   end
 

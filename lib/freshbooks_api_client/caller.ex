@@ -11,7 +11,7 @@ defmodule FreshbooksApiClient.Caller do
 
   """
 
-  @callback run(keyword, keyword) :: String.t()
+  @callback run(any, keyword, keyword) :: String.t()
 
   @doc ~S(A Simple way of accessing all Caller's features)
   defmacro __using__(_opts) do
@@ -20,11 +20,11 @@ defmodule FreshbooksApiClient.Caller do
 
       @behaviour unquote(__MODULE__)
 
-      def run(_, _) do
-        raise "run/2 not implement for #{__MODULE__}"
+      def run(_, _, _) do
+        raise "run/3 not implement for #{__MODULE__}"
       end
 
-      defoverridable [run: 2]
+      defoverridable [run: 3]
     end
   end
 end
