@@ -174,10 +174,10 @@ defmodule FreshbooksApiClient.Interface do
 
   def translate(interface, schema, FreshbooksApiClient.Caller.HttpXml, :list, {:ok, xml}) do
     resources_key = apply(interface, :resources, [])
-    per_page = xml |> xpath(~x"//response/#{resources_key}/@per_page"s) |> String.to_integer()
-    page = xml |> xpath(~x"//response/#{resources_key}/@page"s) |> String.to_integer()
-    pages = xml |> xpath(~x"//response/#{resources_key}/@pages"s) |> String.to_integer()
-    total = xml |> xpath(~x"//response/#{resources_key}/@total"s) |> String.to_integer()
+    per_page = xml |> xpath(~x"//response/#{resources_key}/@per_page"i)
+    page = xml |> xpath(~x"//response/#{resources_key}/@page"i)
+    pages = xml |> xpath(~x"//response/#{resources_key}/@pages"i)
+    total = xml |> xpath(~x"//response/#{resources_key}/@total"i)
 
     {parent, spec} = apply(interface, :xml_parent_spec, [:list])
 
