@@ -99,8 +99,18 @@ defmodule FreshbooksApiClient.ApiBase do
   defp call(module, interface, method, params) do
     use Retry
 
-    retry with: [5_000, 30_000, 60_000], rescue_only: [FreshbooksApiClient.RateLimitError] do
-      call_without_retry(module, interface, method, params)
+    # NOTE: We only want to retry exceptions
+    retry_while with: [5_000, 30_000, 60_000] do
+      try do
+        result = call_without_retry(module, interface, method, params)
+        {:halt, result}
+      rescue
+        e in [FreshbooksApiClient.RateLimitError] -> {:cont, {:exception, e}}
+      end
+    end
+    |> case do
+      {:exception, e} -> raise e
+      result -> result
     end
   end
 
