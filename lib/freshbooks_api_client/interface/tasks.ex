@@ -6,25 +6,35 @@ defmodule FreshbooksApiClient.Interface.Tasks do
   It uses a FreshbooksApiClient.Interface
   """
 
-  import SweetXml
+  use FreshbooksApiClient.Interface,
+    schema: FreshbooksApiClient.Schema.Task,
+    resources: "tasks",
+    resource: "task",
+    allow: ~w(get list)a
 
-  alias FreshbooksApiClient.Schema.Task
+  def xml_parent_spec(:list) do
+    {
+      ~x"//response/tasks/task"l,
+      xml_spec()
+    }
+  end
 
-  use FreshbooksApiClient.Interface, schema: Task, allow: ~w(get list)a
+  def xml_parent_spec(:get) do
+    {
+      ~x"//response/task",
+      xml_spec()
+    }
 
-  defp transform(:task_id, params) do
-    Map.update!(params, :task_id, &String.to_integer/1)
   end
-  defp transform(:rate, params) do
-    Map.update!(params, :rate, fn curr ->
-      case curr do
-        "" -> nil
-        _ -> (curr |> Float.parse() |> elem(0))
-      end
-    end)
+
+  def xml_spec do
+    [
+      task_id: ~x"./task_id/text()"i,
+      name: ~x"./name/text()"s,
+      billable: ~x"./billable/text()"s |> transform_by(&parse_boolean/1),
+      rate: ~x"./rate/text()"s |> transform_by(&parse_decimal/1),
+      description: ~x"./description/text()"s,
+    ]
   end
-  defp transform(:billable, params) do
-    Map.update!(params, :billable, &(&1 == "1"))
-  end
-  defp transform(_field, params), do: params
+
 end

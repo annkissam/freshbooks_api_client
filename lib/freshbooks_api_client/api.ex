@@ -1,31 +1,21 @@
-defmodule FreshbooksApiClient.API do
+defmodule FreshbooksApiClient.Api do
   @moduledoc """
-  This module is the main bridge of communication with Freshbooks keeping all the
-  FreshbooksApiClient settings and app configurations.
+
+  This is an Example API (that can also be used to get started). If you have a
+  need for multiple API credentials, you can create one API module per domain.
+
+  See the FreshbooksApiClient.ApiBase for available methods.
+
+  # Configuration:
+
+    config :freshbooks_api_client, FreshbooksApiClient.Api,
+      caller: FreshbooksApiClient.Caller.HttpXml,
+      token: System.get_env("FRESHBOOKS_API_TOKEN"),
+      subdomain: System.get_env("FRESHBOOKS_API_SUBDOMAIN")
 
   # Usage:
 
-    FreshbooksApiClient.API.get(FreshbooksApiClient.Employee)
+    FreshbooksApiClient.Api.list(FreshbooksApiClient.Interface.Clients)
   """
-
-  @doc ~s(This function delegates to `get` function in the `caller` module)
-  def get(schema, opts \\ %{}) do
-    {caller, opts} = Map.pop(opts, :caller, FreshbooksApiClient.caller())
-    args = [schema, FreshbooksApiClient.token(), opts]
-
-    case apply(caller, :get, args) do
-      {:ok, %HTTPoison.Response{body: body, status_code: 200}} ->
-        resolve_response(schema, Poison.decode!(body, keys: :atoms))
-      {:ok, %HTTPoison.Response{status_code: 401}} -> {:error, :unauthorized}
-      {:error, %HTTPoison.Error{reason: _error}} -> {:error, :connection_err}
-      _ -> {:error, :unknown}
-    end
-  end
-
-  defp resolve_response(schema, body) when is_list(body) do
-    Enum.map(body, &resolve_response(schema, &1))
-  end
-  defp resolve_response(schema, body) do
-    struct!(schema, body)
-  end
+  use FreshbooksApiClient.ApiBase, otp_app: :freshbooks_api_client
 end

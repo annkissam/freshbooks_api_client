@@ -24,75 +24,17 @@ defmodule FreshbooksApiClient do
         subdomain: "skyrim"
 
   """
-
-  @doc """
-  `:caller` can be set as a runtime config
-  in the `config.exs` file
-
-  ## Examples
-  when no `caller` config is set, if returns `FreshbooksApiClient.Caller.HttpXml`
-      iex> FreshbooksApiClient.caller
-      FreshbooksApiClient.Caller.HttpXml
-  """
-  def caller do
-    config(:caller, FreshbooksApiClient.Caller.HttpXml)
-  end
-
-
-  @doc """
-  `:token` can be set as a runtime config
-  in the `config.exs` file
-
-  ## Examples
-  when no `token` config is set, if returns nil
-      iex> FreshbooksApiClient.token
-      "thuum"
-  """
-  def token do
-    config(:token, nil)
-  end
-
-
-  @doc """
-  `:subdomain` can be set as a runtime config
-  in the `config.exs` file
-
-  ## Examples
-  when no `subdomain` config is set, if returns nil
-      iex> FreshbooksApiClient.subdomain
-      "skyrim"
-  """
-  def subdomain do
-    config(:subdomain, nil)
-  end
-
-
-  @doc """
-  Gets configuration assocaited with the `freshbooks_api_client` app.
-
-  ## Examples
-  when no config is set, if returns []
-      iex> FreshbooksApiClient.config
-      [token: "thuum", subdomain: "skyrim"]
-  """
-  def config do
-    Application.get_env(:freshbooks_api_client, FreshbooksApiClient, [])
-  end
-
-
-  @doc """
-  Gets configuration set for a `key`, assocaited with the `freshbooks_api_client` app.
-
-  ## Examples
-  when no config is set for `key`, if returns `default`
-      iex> FreshbooksApiClient.config(:random, "default")
-      "default"
-  """
-  def config(key, default \\ nil) do
-    config()
-    |> Keyword.get(key, default)
-    |> resolve_config(default)
-  end
-
-  def resolve_config(value, _default), do: value
 end
+
+defmodule FreshbooksApiClient.RateLimitError do
+  defexception message: "the API responded with a 'rate-limited' error"
+end
+
+defmodule FreshbooksApiClient.PaginationError do
+  defexception message: "the total_count changed while retrieving results"
+end
+
+defmodule FreshbooksApiClient.NoResultsError do
+  defexception message: "No Results"
+end
+

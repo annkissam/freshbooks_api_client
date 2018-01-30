@@ -18,3 +18,7 @@ erl_crash.dump
 
 # Also ignore archive artifacts (built via "mix archive.build").
 *.ez
+
+# Temporary - Until the data is sanitized
+test/fixture/
+test/freshbook_api_client/

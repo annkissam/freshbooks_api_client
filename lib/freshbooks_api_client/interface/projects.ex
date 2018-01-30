@@ -6,37 +6,36 @@ defmodule FreshbooksApiClient.Interface.Projects do
   It uses a FreshbooksApiClient.Interface
   """
 
-  import SweetXml
+  use FreshbooksApiClient.Interface,
+    schema: FreshbooksApiClient.Schema.Project,
+    resources: "projects",
+    resource: "project",
+    allow: ~w(get list)a
 
-  alias FreshbooksApiClient.Schema.Project
-
-  use FreshbooksApiClient.Interface, schema: Project, allow: ~w(get list)a
-
-  @ids ~w(project_id client_id)a
-
-  defp transform(field, params) when field in @ids do
-    Map.update!(params, field, fn curr ->
-      case curr do
-        "" -> nil
-        _ -> String.to_integer(curr)
-      end
-    end)
+  def xml_parent_spec(:list) do
+    {
+      ~x"//response/projects/project"l,
+      xml_spec()
+    }
   end
-  defp transform(:hour_budget, params) do
-    Map.update!(params, :hour_budget, fn curr ->
-      case curr do
-        "" -> nil
-        _ -> (curr |> Float.parse() |> elem(0))
-      end
-    end)
+
+  def xml_parent_spec(:get) do
+    {
+      ~x"//response/project",
+      xml_spec()
+    }
   end
-  defp transform(:rate, params) do
-    Map.update!(params, :rate, fn curr ->
-      case curr do
-        "" -> nil
-        _ -> (curr |> Float.parse() |> elem(0))
-      end
-    end)
+
+  def xml_spec do
+    [
+      project_id: ~x"./project_id/text()"i,
+      name: ~x"./name/text()"s,
+      description: ~x"./description/text()"s,
+      rate: ~x"./rate/text()"s |> transform_by(&parse_decimal/1),
+      bill_method: ~x"./bill_method/text()"s,
+      hour_budget: ~x"./hour_budget/text()"s |> transform_by(&parse_decimal/1),
+      client_id: ~x"./client_id/text()"Io,
+    ]
   end
-  defp transform(_field, params), do: params
+
 end

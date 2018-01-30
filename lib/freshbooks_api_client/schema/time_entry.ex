@@ -5,20 +5,17 @@ defmodule FreshbooksApiClient.Schema.TimeEntry do
   It uses a FreshbooksApiClient.Schema
   """
 
-  alias FreshbooksApiClient.Schema.{Project, Staff, Task}
-
-  use FreshbooksApiClient.Schema, resource: "time_entry",
-    resources: "time_entries"
+  use FreshbooksApiClient.Schema
 
   api_schema do
     field :time_entry_id, :integer
-    field :hours, :float
+    field :hours, :decimal
     field :date, :date
     field :notes, :string
     field :billed, :boolean
 
-    belongs_to :staff, Staff
-    belongs_to :project, Project
-    belongs_to :task, Task
+    belongs_to :staff, FreshbooksApiClient.Schema.Staff, references: :staff_id
+    belongs_to :project, FreshbooksApiClient.Schema.Project, references: :project_id
+    belongs_to :task, FreshbooksApiClient.Schema.Task, references: :task_id
   end
 end
