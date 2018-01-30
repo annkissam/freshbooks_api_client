@@ -25,6 +25,9 @@ defmodule FreshbooksApiClient.Caller.HttpXml do
         # A successful call returns a status of "ok"
         # An unsuccessful call returns a status of "fail"
         {String.to_atom(status), resp}
+      {:ok, %HTTPoison.Response{body: _resp, status_code: 429}} ->
+        # https://www.freshbooks.com/developers - Request Limits
+        raise FreshbooksApiClient.RateLimitError
       {:ok, %HTTPoison.Response{body: _resp, status_code: 401}} ->
         {:error, :unauthorized}
       {:ok, %HTTPoison.Error{reason: _}} -> {:error, :conn}

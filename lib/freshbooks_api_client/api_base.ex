@@ -99,7 +99,7 @@ defmodule FreshbooksApiClient.ApiBase do
   defp call(module, interface, method, params) do
     use Retry
 
-    # NOTE: We only want to retry exceptions
+    # NOTE: We only want to retry RateLimitError exceptions
     retry_while with: [5_000, 30_000, 60_000] do
       try do
         result = call_without_retry(module, interface, method, params)
@@ -155,6 +155,22 @@ defmodule FreshbooksApiClient.ApiBase do
 
         acc ++ results[:resources]
       end)
+
+      # HOWTO: Produce a rate limit error...
+      # func = fn (page) ->
+      #   results = call(module, interface, :list, [Keyword.merge(params, [per_page: 1, page: page])])
+
+      #   if results[:total] != total, do: raise FreshbooksApiClient.PaginationError
+
+      #   results[:resources]
+      # end
+
+      # pids = Range.new(2, pages)
+      # |> Enum.map(&(Task.async(fn -> func.(&1) end)))
+
+      # Enum.reduce(pids, resources, fn(pid, acc) ->
+      #   acc ++ Task.await(pid)
+      # end)
     end
   end
 end
