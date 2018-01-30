@@ -100,7 +100,8 @@ defmodule FreshbooksApiClient.ApiBase do
     use Retry
 
     # NOTE: We only want to retry RateLimitError exceptions
-    retry_while with: [5_000, 30_000, 60_000] do
+    # Play nicely with other processes by randomizing the wait +/- 10%
+    retry_while with: [5_000, 30_000, 60_000] |> randomize() do
       try do
         result = call_without_retry(module, interface, method, params)
         {:halt, result}
