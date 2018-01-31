@@ -31,6 +31,18 @@ defmodule FreshbooksApiClient.ApiBase do
         |> Keyword.get(key, default)
       end
 
+      def init() do
+        {:ok, config} = config()
+        |> init()
+
+        unquote(otp_app)
+        |> Application.put_env(__MODULE__, config)
+      end
+
+      def init(config) do
+        {:ok, config}
+      end
+
       def caller() do
         config(:caller, FreshbooksApiClient.Caller.HttpXml)
       end
@@ -66,6 +78,8 @@ defmodule FreshbooksApiClient.ApiBase do
       def delete(interface, params) do
         FreshbooksApiClient.ApiBase.delete(__MODULE__, interface, params)
       end
+
+      defoverridable [init: 1]
     end
   end
 
