@@ -49,7 +49,7 @@ defmodule FreshbooksApiClient.Interface.Invoices do
         unit_cost: ~x"./unit_cost/text()"s |> transform_by(&parse_decimal/1),
         quantity: ~x"./quantity/text()"s |> transform_by(&parse_decimal/1),
         amount: ~x"./amount/text()"s |> transform_by(&parse_decimal/1),
-        type: ~x"./type/text()"s,
+        type: ~x"./type/text()"s
       )
     end)
   end

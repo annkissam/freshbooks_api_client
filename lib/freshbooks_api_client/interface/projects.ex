@@ -44,7 +44,7 @@ defmodule FreshbooksApiClient.Interface.Projects do
     Enum.map(xmls, fn(xml) ->
       xmap(xml,
         task_id: ~x"./task_id/text()"i,
-        rate: ~x"./rate/text()"So |> transform_by(&parse_decimal/1),
+        rate: ~x"./rate/text()"So |> transform_by(&parse_decimal/1)
       )
     end)
   end
@@ -52,7 +52,7 @@ defmodule FreshbooksApiClient.Interface.Projects do
   def parse_staff(xmls) do
     Enum.map(xmls, fn(xml) ->
       xmap(xml,
-        staff_id: ~x"./staff_id/text()"i,
+        staff_id: ~x"./staff_id/text()"i
       )
     end)
   end
