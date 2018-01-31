@@ -16,5 +16,8 @@ defmodule FreshbooksApiClient.Schema.Project do
     field :hour_budget, :decimal
 
     belongs_to :client, FreshbooksApiClient.Schema.Client, references: :client_id
+
+    embeds_many :tasks, FreshbooksApiClient.Schema.Task
+    embeds_many :staff, FreshbooksApiClient.Schema.Staff
   end
 end
