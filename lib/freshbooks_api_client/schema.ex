@@ -17,7 +17,7 @@ defmodule FreshbooksApiClient.Schema do
   end
 
   @doc ~S(A Simple way of accessing all Schema's features)
-  defmacro __using__(opts) do
+  defmacro __using__(_opts) do
     quote do
       use Ecto.Schema
 
