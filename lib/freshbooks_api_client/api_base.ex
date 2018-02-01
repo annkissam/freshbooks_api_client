@@ -160,7 +160,7 @@ defmodule FreshbooksApiClient.ApiBase do
     total = results[:total]
     resources = results[:resources]
 
-    if pages == 1 do
+    if pages <= 1 do
       resources
     else
       Enum.reduce(Range.new(2, pages), resources, fn(page, acc) ->
