@@ -1,7 +1,7 @@
 defmodule FreshbooksApiClient.Mixfile do
   use Mix.Project
 
-  @version "0.2.3"
+  @version "0.2.4"
   @url "https://github.com/aditya7iyengar/freshbooks_api_client"
 
   def project do
@@ -9,6 +9,7 @@ defmodule FreshbooksApiClient.Mixfile do
       app: :freshbooks_api_client,
       version: @version,
       elixir: "~> 1.5",
+      elixirc_paths: elixirc_paths(Mix.env),
       start_permanent: Mix.env == :prod,
       build_embedded: Mix.env == :prod,
       deps: deps(),
@@ -24,6 +25,9 @@ defmodule FreshbooksApiClient.Mixfile do
     ]
   end
 
+  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(_), do: ["lib"]
+
   def application do
     [extra_applications: [:logger]]
   end
@@ -37,7 +41,7 @@ defmodule FreshbooksApiClient.Mixfile do
   def package do
     [
       files: ["lib", "mix.exs", "README.md"],
-      maintainers: ["Adi Iyengar"],
+      maintainers: ["Adi Iyengar", "Eric Sullivan"],
       licenses: ["MIT"],
       links: %{"Github" => @url},
     ]
