@@ -133,6 +133,8 @@ defmodule FreshbooksApiClient.Interface do
         end
       end
 
+      def translate(FreshbooksApiClient.Caller.InMemory, _, results), do: results
+
       def translate(FreshbooksApiClient.Caller.HttpXml, method, {:fail, xml}) when method in [:create, :update, :get, :delete] do
         FreshbooksApiClient.Interface.translate(__MODULE__, unquote(schema), FreshbooksApiClient.Caller.HttpXml, method, {:fail, xml})
       end
