@@ -17,4 +17,9 @@ defmodule FreshbooksApiClient.Schema.InvoiceLine do
     field :amount, :decimal
     field :type, :string
   end
+
+  def changeset(invoice_line, attrs) do
+    invoice_line
+    |> cast(attrs, [:line_id, :order, :name, :description, :unit_cost, :quantity, :amount, :type])
+  end
 end

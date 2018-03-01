@@ -20,4 +20,11 @@ defmodule FreshbooksApiClient.Schema.Project do
     embeds_many :tasks, FreshbooksApiClient.Schema.Task
     embeds_many :staff, FreshbooksApiClient.Schema.Staff
   end
+
+  def changeset(project, attrs) do
+    project
+    |> cast(attrs, [:project_id, :name, :description, :rate, :bill_method, :hour_budget, :client_id])
+    |> cast_embed(:tasks)
+    |> cast_embed(:staff)
+  end
 end

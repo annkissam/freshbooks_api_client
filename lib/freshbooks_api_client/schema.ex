@@ -20,6 +20,7 @@ defmodule FreshbooksApiClient.Schema do
   defmacro __using__(_opts) do
     quote do
       use Ecto.Schema
+      import Ecto.Changeset
 
       import FreshbooksApiClient.Schema
     end

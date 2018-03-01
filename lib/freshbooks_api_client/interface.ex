@@ -223,6 +223,7 @@ defmodule FreshbooksApiClient.Interface do
   end
 
   def to_schema(schema, params) do
-    struct!(schema, params)
+    apply(schema, :changeset, [struct(schema), params])
+    |> Ecto.Changeset.apply_changes()
   end
 end
