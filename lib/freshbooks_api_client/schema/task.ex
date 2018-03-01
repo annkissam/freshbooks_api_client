@@ -14,4 +14,10 @@ defmodule FreshbooksApiClient.Schema.Task do
     field :rate, :decimal
     field :description, :string
   end
+
+  def changeset(task, attrs) do
+    task
+    |> cast(attrs, [:task_id, :name, :billable, :rate, :description])
+  end
 end
+

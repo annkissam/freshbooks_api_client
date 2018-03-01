@@ -19,4 +19,10 @@ defmodule FreshbooksApiClient.Schema.Invoice do
 
     embeds_many :lines, FreshbooksApiClient.Schema.InvoiceLine
   end
+
+  def changeset(invoice, attrs) do
+    invoice
+    |> cast(attrs, [:invoice_id, :date, :amount, :amount_outstanding, :status, :folder, :client_id])
+    |> cast_embed(:lines)
+  end
 end

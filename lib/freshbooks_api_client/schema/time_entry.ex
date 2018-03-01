@@ -18,4 +18,9 @@ defmodule FreshbooksApiClient.Schema.TimeEntry do
     belongs_to :project, FreshbooksApiClient.Schema.Project, references: :project_id
     belongs_to :task, FreshbooksApiClient.Schema.Task, references: :task_id
   end
+
+  def changeset(time_entry, attrs) do
+   time_entry
+    |> cast(attrs, [:time_entry_id, :hours, :date, :notes, :billed, :staff_id, :project_id, :task_id])
+  end
 end

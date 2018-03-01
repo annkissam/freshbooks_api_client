@@ -34,5 +34,4 @@ defmodule FreshbooksApiClient.Interface.Clients do
       organization: ~x"./organization/text()"s,
     ]
   end
-
 end

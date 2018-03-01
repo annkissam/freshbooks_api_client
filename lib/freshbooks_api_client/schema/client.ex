@@ -13,4 +13,9 @@ defmodule FreshbooksApiClient.Schema.Client do
     field :last_name, :string
     field :organization, :string
   end
+
+  def changeset(client, attrs) do
+    client
+    |> cast(attrs, [:client_id, :first_name, :last_name, :organization])
+  end
 end

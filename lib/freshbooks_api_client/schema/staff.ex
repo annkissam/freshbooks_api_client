@@ -26,4 +26,9 @@ defmodule FreshbooksApiClient.Schema.Staff do
     field :country, :string
     field :code, :string
   end
+
+  def changeset(staff, attrs) do
+    staff
+    |> cast(attrs, [:staff_id, :username, :first_name, :last_name, :email, :business_phone, :mobile_phone, :rate, :last_login, :number_of_logins, :signup_date, :street1, :street2, :city, :state, :country, :code])
+  end
 end
