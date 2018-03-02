@@ -1,8 +1,8 @@
 defmodule FreshbooksApiClient.Mixfile do
   use Mix.Project
 
-  @version "0.2.4"
-  @url "https://github.com/aditya7iyengar/freshbooks_api_client"
+  @version "0.3.0"
+  @url "https://github.com/annkissam/freshbooks_api_client"
 
   def project do
     [
