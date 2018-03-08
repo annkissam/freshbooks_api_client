@@ -14,6 +14,8 @@ defmodule FreshbooksApiClient.Schema.Invoice do
     field :amount_outstanding, :decimal
     field :status, :string
     field :folder, :string
+    field :number, :string
+    field :notes, :string
 
     belongs_to :client, FreshbooksApiClient.Schema.Client, references: :client_id
 
@@ -22,7 +24,7 @@ defmodule FreshbooksApiClient.Schema.Invoice do
 
   def changeset(invoice, attrs) do
     invoice
-    |> cast(attrs, [:invoice_id, :date, :amount, :amount_outstanding, :status, :folder, :client_id])
+    |> cast(attrs, [:invoice_id, :date, :amount, :amount_outstanding, :status, :folder, :number, :notes, :client_id])
     |> cast_embed(:lines)
   end
 end

@@ -34,6 +34,8 @@ defmodule FreshbooksApiClient.Interface.Invoices do
       amount_outstanding: ~x"./amount_outstanding/text()"s |> transform_by(&parse_decimal/1),
       status: ~x"./status/text()"s,
       folder: ~x"./folder/text()"s,
+      number: ~x"./number/text()"s,
+      notes: ~x"./notes/text()"s,
       client_id: ~x"./client_id/text()"i,
       lines: ~x"./lines/line"l |> transform_by(&parse_lines/1),
     ]
