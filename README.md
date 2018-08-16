@@ -6,8 +6,7 @@
 ```elixir
 def deps do
   [
-    {:freshbooks_api_client, "~> 0.1.0"}
+    {:freshbooks_api_client, "~> 0.3.1"}
   ]
 end
 ```
-
