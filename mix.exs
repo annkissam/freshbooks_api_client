@@ -1,7 +1,7 @@
 defmodule FreshbooksApiClient.Mixfile do
   use Mix.Project
 
-  @version "0.3.0"
+  @version "0.3.1"
   @url "https://github.com/annkissam/freshbooks_api_client"
 
   def project do
@@ -59,9 +59,8 @@ defmodule FreshbooksApiClient.Mixfile do
     [
       {:ecto, "~> 2.2"},
       {:ex_doc, "~> 0.14", only: :dev, runtime: false},
-      {:exvcr, "~> 0.8", only: :test},
-      {:httpoison, "~> 0.13"},
-      {:poison, "~> 3.1"},
+      # {:exvcr, "~> 0.8", only: :test},
+      {:httpoison, "~> 1.1"},
       {:retry, "~> 0.8"},
       {:sweet_xml, "~> 0.6"},
       {:xml_builder, "~> 2.0"},
@@ -69,7 +68,7 @@ defmodule FreshbooksApiClient.Mixfile do
   end
 
   defp aliases do
-    ["publish": ["hex.publish", &git_tag/1]]
+    [publish: ["hex.publish", &git_tag/1]]
   end
 
   defp git_tag(_args) do
