@@ -58,7 +58,7 @@ defmodule FreshbooksApiClient.Mixfile do
   defp deps do
     [
       {:ecto, "~> 2.2"},
-      {:ex_doc, "~> 0.14", only: :dev, runtime: false},
+      {:ex_doc, "~> 0.19", only: :dev, runtime: false},
       # {:exvcr, "~> 0.8", only: :test},
       {:httpoison, "~> 1.1"},
       {:retry, "~> 0.8"},
