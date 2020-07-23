@@ -1,7 +1,7 @@
 defmodule FreshbooksApiClient.Mixfile do
   use Mix.Project
 
-  @version "0.3.2"
+  @version "0.4.0"
   @url "https://github.com/annkissam/freshbooks_api_client"
 
   def project do
@@ -9,9 +9,9 @@ defmodule FreshbooksApiClient.Mixfile do
       app: :freshbooks_api_client,
       version: @version,
       elixir: "~> 1.5",
-      elixirc_paths: elixirc_paths(Mix.env),
-      start_permanent: Mix.env == :prod,
-      build_embedded: Mix.env == :prod,
+      elixirc_paths: elixirc_paths(Mix.env()),
+      start_permanent: Mix.env() == :prod,
+      build_embedded: Mix.env() == :prod,
       deps: deps(),
       aliases: aliases(),
 
@@ -21,7 +21,7 @@ defmodule FreshbooksApiClient.Mixfile do
 
       # Docs
       name: "Akd",
-      docs: docs(),
+      docs: docs()
     ]
   end
 
@@ -43,7 +43,7 @@ defmodule FreshbooksApiClient.Mixfile do
       files: ["lib", "mix.exs", "README.md"],
       maintainers: ["Adi Iyengar", "Eric Sullivan"],
       licenses: ["MIT"],
-      links: %{"Github" => @url},
+      links: %{"Github" => @url}
     ]
   end
 
@@ -57,13 +57,12 @@ defmodule FreshbooksApiClient.Mixfile do
 
   defp deps do
     [
-      {:ecto, "~> 2.2"},
-      {:ex_doc, "~> 0.19", only: :dev, runtime: false},
-      # {:exvcr, "~> 0.8", only: :test},
-      {:httpoison, "~> 1.1"},
-      {:retry, "~> 0.8.0"},
+      {:ecto, "~> 3.0"},
+      {:ex_doc, "~> 0.22", only: :dev, runtime: false},
+      {:httpoison, "~> 1.7"},
+      {:retry, "~> 0.14"},
       {:sweet_xml, "~> 0.6"},
-      {:xml_builder, "~> 2.0"},
+      {:xml_builder, "~> 2.0"}
     ]
   end
 
@@ -72,7 +71,7 @@ defmodule FreshbooksApiClient.Mixfile do
   end
 
   defp git_tag(_args) do
-    System.cmd "git", ["tag", "v" <> Mix.Project.config[:version]]
-    System.cmd "git", ["push", "--tags"]
+    System.cmd("git", ["tag", "v" <> Mix.Project.config()[:version]])
+    System.cmd("git", ["push", "--tags"])
   end
 end
