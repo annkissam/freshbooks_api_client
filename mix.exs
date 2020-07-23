@@ -20,7 +20,7 @@ defmodule FreshbooksApiClient.Mixfile do
       package: package(),
 
       # Docs
-      name: "Akd",
+      name: "freshbooks_api_client",
       docs: docs()
     ]
   end
@@ -51,6 +51,7 @@ defmodule FreshbooksApiClient.Mixfile do
     [
       main: "FreshbooksApiClient",
       source_url: @url,
+      extras: ["README.md"],
       source_ref: "v#{@version}"
     ]
   end
