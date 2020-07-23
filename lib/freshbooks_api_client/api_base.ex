@@ -32,8 +32,9 @@ defmodule FreshbooksApiClient.ApiBase do
       end
 
       def init() do
-        {:ok, config} = config()
-        |> init()
+        {:ok, config} =
+          config()
+          |> init()
 
         unquote(otp_app)
         |> Application.put_env(__MODULE__, config)
@@ -79,7 +80,7 @@ defmodule FreshbooksApiClient.ApiBase do
         FreshbooksApiClient.ApiBase.delete(__MODULE__, interface, params)
       end
 
-      defoverridable [init: 1]
+      defoverridable init: 1
     end
   end
 
@@ -139,6 +140,10 @@ defmodule FreshbooksApiClient.ApiBase do
 
     retry with: [5_000, 30_000, 60_000], rescue_only: [FreshbooksApiClient.PaginationError] do
       all_without_retry(module, interface, params)
+    after
+      result -> result
+    else
+      error -> error
     end
   end
 
@@ -154,7 +159,7 @@ defmodule FreshbooksApiClient.ApiBase do
   # delete 3, add 7 after page 1
   # 1,2,3 + 5,6,7 total == 6 (the results are inaccurate - Check that #4 is actually deleted w/ a get call to the API)
   defp all_without_retry(module, interface, params) do
-    results = call(module, interface, :list, [Keyword.merge(params, [per_page: 100])])
+    results = call(module, interface, :list, [Keyword.merge(params, per_page: 100)])
 
     pages = results[:pages]
     total = results[:total]
@@ -163,10 +168,11 @@ defmodule FreshbooksApiClient.ApiBase do
     if pages <= 1 do
       resources
     else
-      Enum.reduce(Range.new(2, pages), resources, fn(page, acc) ->
-        results = call(module, interface, :list, [Keyword.merge(params, [per_page: 100, page: page])])
+      Enum.reduce(Range.new(2, pages), resources, fn page, acc ->
+        results =
+          call(module, interface, :list, [Keyword.merge(params, per_page: 100, page: page)])
 
-        if results[:total] != total, do: raise FreshbooksApiClient.PaginationError
+        if results[:total] != total, do: raise(FreshbooksApiClient.PaginationError)
 
         acc ++ results[:resources]
       end)
