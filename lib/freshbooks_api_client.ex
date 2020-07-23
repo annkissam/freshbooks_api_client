@@ -37,4 +37,3 @@ end
 defmodule FreshbooksApiClient.NoResultsError do
   defexception message: "No Results"
 end
-

@@ -16,17 +16,21 @@ defmodule FreshbooksApiClient.Context do
   end
 
   def get_client!(client_id) do
-    FreshbooksApiClient.Api.get!(FreshbooksApiClient.Interface.Clients, [client_id: client_id])
+    FreshbooksApiClient.Api.get!(FreshbooksApiClient.Interface.Clients, client_id: client_id)
   end
 
   # https://www.freshbooks.com/developers/docs/invoices#invoice.list
   def list_invoices(date: date) do
     date = Date.to_iso8601(date)
-    FreshbooksApiClient.Api.list(FreshbooksApiClient.Interface.Invoices, [date_from: date, date_to: date])
+
+    FreshbooksApiClient.Api.list(FreshbooksApiClient.Interface.Invoices,
+      date_from: date,
+      date_to: date
+    )
   end
 
   def get_invoice!(invoice_id) do
-    FreshbooksApiClient.Api.get!(FreshbooksApiClient.Interface.Invoices, [invoice_id: invoice_id])
+    FreshbooksApiClient.Api.get!(FreshbooksApiClient.Interface.Invoices, invoice_id: invoice_id)
   end
 
   # https://www.freshbooks.com/developers/docs/projects#project.list
@@ -35,7 +39,7 @@ defmodule FreshbooksApiClient.Context do
   end
 
   def get_project!(project_id) do
-    FreshbooksApiClient.Api.get!(FreshbooksApiClient.Interface.Projects, [project_id: project_id])
+    FreshbooksApiClient.Api.get!(FreshbooksApiClient.Interface.Projects, project_id: project_id)
   end
 
   # https://www.freshbooks.com/developers/docs/staff#staff.list
@@ -44,7 +48,7 @@ defmodule FreshbooksApiClient.Context do
   end
 
   def get_staff!(staff_id) do
-    FreshbooksApiClient.Api.get!(FreshbooksApiClient.Interface.Staff, [staff_id: staff_id])
+    FreshbooksApiClient.Api.get!(FreshbooksApiClient.Interface.Staff, staff_id: staff_id)
   end
 
   # NOTE: This requires calling list_staff and so it's not performant.
@@ -60,17 +64,23 @@ defmodule FreshbooksApiClient.Context do
   end
 
   def get_task!(task_id) do
-    FreshbooksApiClient.Api.get!(FreshbooksApiClient.Interface.Tasks, [task_id: task_id])
+    FreshbooksApiClient.Api.get!(FreshbooksApiClient.Interface.Tasks, task_id: task_id)
   end
 
   # https://www.freshbooks.com/developers/docs/time-entries#time_entry.list
   def list_time_entries(date: date) do
     date = Date.to_iso8601(date)
-    FreshbooksApiClient.Api.list(FreshbooksApiClient.Interface.TimeEntries, [date_from: date, date_to: date])
+
+    FreshbooksApiClient.Api.list(FreshbooksApiClient.Interface.TimeEntries,
+      date_from: date,
+      date_to: date
+    )
   end
 
   def get_time_entry!(time_entry_id) do
-    FreshbooksApiClient.Api.get!(FreshbooksApiClient.Interface.TimeEntries, [time_entry_id: time_entry_id])
+    FreshbooksApiClient.Api.get!(FreshbooksApiClient.Interface.TimeEntries,
+      time_entry_id: time_entry_id
+    )
   end
 
   # {:ok, %{time_entry_id: 1578774}} | {:error, errors}
@@ -86,6 +96,8 @@ defmodule FreshbooksApiClient.Context do
 
   # {:ok, nil} | {:error, errors}
   def delete_time_entry(%{time_entry_id: time_entry_id}) do
-    FreshbooksApiClient.Api.delete(FreshbooksApiClient.Interface.TimeEntries, [time_entry_id: time_entry_id])
+    FreshbooksApiClient.Api.delete(FreshbooksApiClient.Interface.TimeEntries,
+      time_entry_id: time_entry_id
+    )
   end
 end

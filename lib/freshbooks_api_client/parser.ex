@@ -1,12 +1,14 @@
 defmodule FreshbooksApiClient.Parser do
   def parse_date(value) do
     case value do
-      "" -> nil
+      "" ->
+        nil
+
       _ ->
         # Some date's also have a time component: 2018-01-01 00:00:00
         String.split(value, " ")
-        |> List.first
-        |> Date.from_iso8601!
+        |> List.first()
+        |> Date.from_iso8601!()
     end
   end
 

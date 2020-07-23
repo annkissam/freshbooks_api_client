@@ -37,12 +37,12 @@ defmodule FreshbooksApiClient.Interface.Invoices do
       number: ~x"./number/text()"s,
       notes: ~x"./notes/text()"s,
       client_id: ~x"./client_id/text()"i,
-      lines: ~x"./lines/line"l |> transform_by(&parse_lines/1),
+      lines: ~x"./lines/line"l |> transform_by(&parse_lines/1)
     ]
   end
 
   def parse_lines(xmls) do
-    Enum.map(xmls, fn(xml) ->
+    Enum.map(xmls, fn xml ->
       xmap(xml,
         line_id: ~x"./line_id/text()"i,
         order: ~x"./order/text()"i,
@@ -55,5 +55,4 @@ defmodule FreshbooksApiClient.Interface.Invoices do
       )
     end)
   end
-
 end

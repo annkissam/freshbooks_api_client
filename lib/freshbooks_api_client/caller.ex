@@ -24,8 +24,7 @@ defmodule FreshbooksApiClient.Caller do
         raise "run/3 not implement for #{__MODULE__}"
       end
 
-      defoverridable [run: 3]
+      defoverridable run: 3
     end
   end
 end
-

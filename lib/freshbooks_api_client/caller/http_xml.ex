@@ -14,7 +14,8 @@ defmodule FreshbooksApiClient.Caller.HttpXml do
   alias FreshbooksApiClient.Xml
 
   def run(api, method, params, opts \\ []) do
-    response = method
+    response =
+      method
       |> get_request_body(params)
       |> make_request(opts, api)
 
@@ -25,12 +26,16 @@ defmodule FreshbooksApiClient.Caller.HttpXml do
         # A successful call returns a status of "ok"
         # An unsuccessful call returns a status of "fail"
         {String.to_atom(status), resp}
+
       {:ok, %HTTPoison.Response{body: _resp, status_code: 429}} ->
         # https://www.freshbooks.com/developers - Request Limits
         raise FreshbooksApiClient.RateLimitError
+
       {:ok, %HTTPoison.Response{body: _resp, status_code: 401}} ->
         {:error, :unauthorized}
-      {:ok, %HTTPoison.Error{reason: _}} -> {:error, :conn}
+
+      {:ok, %HTTPoison.Error{reason: _}} ->
+        {:error, :conn}
     end
   end
 
