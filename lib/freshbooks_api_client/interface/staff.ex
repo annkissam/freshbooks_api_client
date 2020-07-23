@@ -44,8 +44,7 @@ defmodule FreshbooksApiClient.Interface.Staff do
       city: ~x"./city/text()"s,
       state: ~x"./state/text()"s,
       country: ~x"./country/text()"s,
-      code: ~x"./code/text()"s,
+      code: ~x"./code/text()"s
     ]
   end
-
 end

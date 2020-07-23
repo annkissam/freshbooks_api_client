@@ -48,12 +48,18 @@ defmodule FreshbooksApiClient.Api do
 
   def init(config) do
     if config[:load_from_system_env] do
-      token = System.get_env("FRESHBOOKS_API_TOKEN") || raise "expected the FRESHBOOKS_API_TOKEN environment variable to be set"
-      subdomain = System.get_env("FRESHBOOKS_API_SUBDOMAIN") || raise "expected the FRESHBOOKS_API_SUBDOMAIN environment variable to be set"
+      token =
+        System.get_env("FRESHBOOKS_API_TOKEN") ||
+          raise "expected the FRESHBOOKS_API_TOKEN environment variable to be set"
 
-      config = config
-      |> Keyword.put(:token, token)
-      |> Keyword.put(:subdomain, subdomain)
+      subdomain =
+        System.get_env("FRESHBOOKS_API_SUBDOMAIN") ||
+          raise "expected the FRESHBOOKS_API_SUBDOMAIN environment variable to be set"
+
+      config =
+        config
+        |> Keyword.put(:token, token)
+        |> Keyword.put(:subdomain, subdomain)
 
       {:ok, config}
     else

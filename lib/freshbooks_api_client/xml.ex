@@ -20,10 +20,13 @@ defmodule FreshbooksApiClient.Xml do
 
   defp get_xml_string(resource, method, keyword) when method in @posts do
     :request
-    |> element(%{method: resource <> "." <> method},
-               [element(resource, keyword)])
+    |> element(
+      %{method: resource <> "." <> method},
+      [element(resource, keyword)]
+    )
     |> doc()
   end
+
   defp get_xml_string(resource, method, keyword) do
     :request
     |> element(%{method: resource <> "." <> method}, keyword)

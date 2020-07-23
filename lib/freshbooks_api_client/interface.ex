@@ -85,91 +85,128 @@ defmodule FreshbooksApiClient.Interface do
 
       def list(api, params \\ []) do
         caller = api.caller()
+
         case Enum.member?(unquote(allowed), :list) do
           true ->
             method = resource() <> ".list"
             translate(caller, :list, apply(caller, :run, [api, method, params]))
-          _ -> raise "action `:list` not allowed for #{unquote(schema)}"
+
+          _ ->
+            raise "action `:list` not allowed for #{unquote(schema)}"
         end
       end
 
       def get(api, params) do
         caller = api.caller()
+
         case Enum.member?(unquote(allowed), :get) do
           true ->
             method = resource() <> ".get"
             translate(caller, :get, apply(caller, :run, [api, method, params]))
-            _ -> raise "action `:get` not allowed for #{unquote(schema)}"
+
+          _ ->
+            raise "action `:get` not allowed for #{unquote(schema)}"
         end
       end
 
       def create(api, params) do
         caller = api.caller()
+
         case Enum.member?(unquote(allowed), :create) do
           true ->
             method = resource() <> ".create"
             translate(caller, :create, apply(caller, :run, [api, method, params]))
-          _ -> raise "action `:create` not allowed for #{unquote(schema)}"
+
+          _ ->
+            raise "action `:create` not allowed for #{unquote(schema)}"
         end
       end
 
       def update(api, params) do
         caller = api.caller()
+
         case Enum.member?(unquote(allowed), :update) do
           true ->
             method = resource() <> ".update"
             translate(caller, :update, apply(caller, :run, [api, method, params]))
-          _ -> raise "action `:update` not allowed for #{unquote(schema)}"
+
+          _ ->
+            raise "action `:update` not allowed for #{unquote(schema)}"
         end
       end
 
       def delete(api, params) do
         caller = api.caller()
+
         case Enum.member?(unquote(allowed), :delete) do
           true ->
             method = resource() <> ".delete"
             translate(caller, :delete, apply(caller, :run, [api, method, params]))
-          _ -> raise "action `:delete` not allowed for #{unquote(schema)}"
+
+          _ ->
+            raise "action `:delete` not allowed for #{unquote(schema)}"
         end
       end
 
       def translate(FreshbooksApiClient.Caller.InMemory, _, results), do: results
 
-      def translate(FreshbooksApiClient.Caller.HttpXml, method, {:fail, xml}) when method in [:create, :update, :get, :delete] do
-        FreshbooksApiClient.Interface.translate(__MODULE__, unquote(schema), FreshbooksApiClient.Caller.HttpXml, method, {:fail, xml})
+      def translate(FreshbooksApiClient.Caller.HttpXml, method, {:fail, xml})
+          when method in [:create, :update, :get, :delete] do
+        FreshbooksApiClient.Interface.translate(
+          __MODULE__,
+          unquote(schema),
+          FreshbooksApiClient.Caller.HttpXml,
+          method,
+          {:fail, xml}
+        )
       end
 
       def translate(FreshbooksApiClient.Caller.HttpXml, method, {:fail, xml}) do
         raise "XML Error: #{xml}"
       end
 
-      def translate(_, _, {:error, :unauthorized}), do: raise "Unauthorized!"
+      def translate(_, _, {:error, :unauthorized}), do: raise("Unauthorized!")
 
-      def translate(_, _, {:error, :conn}), do: raise "HTTP Connection Error!"
+      def translate(_, _, {:error, :conn}), do: raise("HTTP Connection Error!")
 
-      def translate(caller, method, {:ok, xml}) when method in [:create, :update, :delete, :get, :list] do
-        FreshbooksApiClient.Interface.translate(__MODULE__, unquote(schema), caller, method, {:ok, xml})
+      def translate(caller, method, {:ok, xml})
+          when method in [:create, :update, :delete, :get, :list] do
+        FreshbooksApiClient.Interface.translate(
+          __MODULE__,
+          unquote(schema),
+          caller,
+          method,
+          {:ok, xml}
+        )
       end
 
       def translate(caller, method, {return, _data}) do
-        raise "translate/3 not implemented for #{__MODULE__} w/ (#{caller}, :#{method}, {:#{return}, data})"
+        raise "translate/3 not implemented for #{__MODULE__} w/ (#{caller}, :#{method}, {:#{
+                return
+              }, data})"
       end
 
-      defoverridable [{:resource, 0}, {:resources, 0}, {:translate, 3} | Enum.map(unquote(allowed), &{&1, 2})]
+      defoverridable [
+        {:resource, 0},
+        {:resources, 0},
+        {:translate, 3} | Enum.map(unquote(allowed), &{&1, 2})
+      ]
     end
   end
 
   # TODO: Does this capture all errors?
   def translate(_interface, _schema, FreshbooksApiClient.Caller.HttpXml, _method, {:fail, xml}) do
     parent = ~x"//response"
+
     spec = [
       error: ~x"./error/text()"s,
       code: ~x"./code/text()"i,
-      field: ~x"./field/text()"os,
+      field: ~x"./field/text()"os
     ]
 
-    errors = xml
-    |> xpath(parent, spec)
+    errors =
+      xml
+      |> xpath(parent, spec)
 
     {:error, errors}
   end
@@ -183,24 +220,26 @@ defmodule FreshbooksApiClient.Interface do
 
     {parent, spec} = apply(interface, :xml_parent_spec, [:list])
 
-    resources = xml
+    resources =
+      xml
       |> xpath(parent, spec)
-      |> Enum.map(&(to_schema(schema, &1)))
+      |> Enum.map(&to_schema(schema, &1))
 
     %{
       per_page: per_page,
       page: page,
       pages: pages,
       total: total,
-      resources: resources,
+      resources: resources
     }
   end
 
   def translate(interface, schema, FreshbooksApiClient.Caller.HttpXml, :get, {:ok, xml}) do
     {parent, spec} = apply(interface, :xml_parent_spec, [:get])
 
-    params = xml
-    |> xpath(parent, spec)
+    params =
+      xml
+      |> xpath(parent, spec)
 
     {:ok, to_schema(schema, params)}
   end
@@ -208,8 +247,9 @@ defmodule FreshbooksApiClient.Interface do
   def translate(interface, _schema, FreshbooksApiClient.Caller.HttpXml, :create, {:ok, xml}) do
     {parent, spec} = apply(interface, :xml_parent_spec, [:create])
 
-    params = xml
-    |> xpath(parent, spec)
+    params =
+      xml
+      |> xpath(parent, spec)
 
     {:ok, params}
   end

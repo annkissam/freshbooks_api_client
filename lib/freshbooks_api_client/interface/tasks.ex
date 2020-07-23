@@ -24,7 +24,6 @@ defmodule FreshbooksApiClient.Interface.Tasks do
       ~x"//response/task",
       xml_spec()
     }
-
   end
 
   def xml_spec do
@@ -33,8 +32,7 @@ defmodule FreshbooksApiClient.Interface.Tasks do
       name: ~x"./name/text()"s,
       billable: ~x"./billable/text()"s |> transform_by(&parse_boolean/1),
       rate: ~x"./rate/text()"s |> transform_by(&parse_decimal/1),
-      description: ~x"./description/text()"s,
+      description: ~x"./description/text()"s
     ]
   end
-
 end

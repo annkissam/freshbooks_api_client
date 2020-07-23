@@ -36,12 +36,12 @@ defmodule FreshbooksApiClient.Interface.Projects do
       hour_budget: ~x"./hour_budget/text()"s |> transform_by(&parse_decimal/1),
       client_id: ~x"./client_id/text()"Io,
       tasks: ~x"./tasks/task"l |> transform_by(&parse_tasks/1),
-      staff: ~x"./staff/staff"l |> transform_by(&parse_staff/1),
+      staff: ~x"./staff/staff"l |> transform_by(&parse_staff/1)
     ]
   end
 
   def parse_tasks(xmls) do
-    Enum.map(xmls, fn(xml) ->
+    Enum.map(xmls, fn xml ->
       xmap(xml,
         task_id: ~x"./task_id/text()"i,
         rate: ~x"./rate/text()"So |> transform_by(&parse_decimal/1)
@@ -50,11 +50,10 @@ defmodule FreshbooksApiClient.Interface.Projects do
   end
 
   def parse_staff(xmls) do
-    Enum.map(xmls, fn(xml) ->
+    Enum.map(xmls, fn xml ->
       xmap(xml,
         staff_id: ~x"./staff_id/text()"i
       )
     end)
   end
-
 end

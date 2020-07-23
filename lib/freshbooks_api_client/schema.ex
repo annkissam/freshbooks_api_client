@@ -26,4 +26,3 @@ defmodule FreshbooksApiClient.Schema do
     end
   end
 end
-

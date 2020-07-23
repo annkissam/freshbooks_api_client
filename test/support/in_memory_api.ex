@@ -9,8 +9,8 @@ defmodule FreshbooksApiClient.InMemoryApi do
       total: 2,
       resources: [
         time_entry_1(),
-        time_entry_2(),
-      ],
+        time_entry_2()
+      ]
     }
   end
 
@@ -23,7 +23,7 @@ defmodule FreshbooksApiClient.InMemoryApi do
       billed: false,
       staff_id: 50,
       project_id: 40,
-      task_id: 60,
+      task_id: 60
     }
   end
 
@@ -36,7 +36,7 @@ defmodule FreshbooksApiClient.InMemoryApi do
       billed: false,
       staff_id: 51,
       project_id: 41,
-      task_id: 61,
+      task_id: 61
     }
   end
 end

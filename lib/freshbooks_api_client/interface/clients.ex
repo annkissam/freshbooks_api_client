@@ -31,7 +31,7 @@ defmodule FreshbooksApiClient.Interface.Clients do
       client_id: ~x"./client_id/text()"i,
       first_name: ~x"./first_name/text()"s,
       last_name: ~x"./last_name/text()"s,
-      organization: ~x"./organization/text()"s,
+      organization: ~x"./organization/text()"s
     ]
   end
 end

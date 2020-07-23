@@ -8,10 +8,10 @@ defmodule FreshbooksApiClient.Schema.Client do
   use FreshbooksApiClient.Schema
 
   api_schema do
-    field :client_id, :integer
-    field :first_name, :string
-    field :last_name, :string
-    field :organization, :string
+    field(:client_id, :integer)
+    field(:first_name, :string)
+    field(:last_name, :string)
+    field(:organization, :string)
   end
 
   def changeset(client, attrs) do
